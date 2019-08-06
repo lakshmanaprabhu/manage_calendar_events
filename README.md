@@ -1,6 +1,6 @@
 # manage_calendar_events
 
-A flutter plugin which will help you add, edit and remove  the events from your (Android&#x2F;ios) device calendar
+A new Flutter plugin.
 
 ## Getting Started
 

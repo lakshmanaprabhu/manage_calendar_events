@@ -1,7 +1,7 @@
 package io.flutter.plugins;
 
 import io.flutter.plugin.common.PluginRegistry;
-import in.fantastic.manage_calendar_events.ManageCalendarEventsPlugin;
+import com.fantastic.manage_calendar_events.ManageCalendarEventsPlugin;
 
 /**
  * Generated file. Do not edit.
@@ -11,7 +11,7 @@ public final class GeneratedPluginRegistrant {
     if (alreadyRegisteredWith(registry)) {
       return;
     }
-    ManageCalendarEventsPlugin.registerWith(registry.registrarFor("in.fantastic.manage_calendar_events.ManageCalendarEventsPlugin"));
+    ManageCalendarEventsPlugin.registerWith(registry.registrarFor("com.fantastic.manage_calendar_events.ManageCalendarEventsPlugin"));
   }
 
   private static boolean alreadyRegisteredWith(PluginRegistry registry) {

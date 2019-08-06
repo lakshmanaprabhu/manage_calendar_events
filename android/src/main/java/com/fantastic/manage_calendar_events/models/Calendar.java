@@ -1,4 +1,4 @@
-package in.fantastic.manage_calendar_events.models;
+package com.fantastic.manage_calendar_events.models;
 
 public final class Calendar {
 

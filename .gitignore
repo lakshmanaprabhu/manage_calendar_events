@@ -1,0 +1,11 @@
+.idea
+example/android/.gradle
+example/build/app/generated
+example/build
+.packages
+example/.flutter-plugins
+example/.packages
+example/android/android.iml
+example/android/gradlew
+example/android/local.properties
+example/ios/Podfile

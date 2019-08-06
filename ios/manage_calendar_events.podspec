@@ -4,9 +4,9 @@
 Pod::Spec.new do |s|
   s.name             = 'manage_calendar_events'
   s.version          = '0.0.1'
-  s.summary          = 'A flutter plugin which will help you add, edit and remove  the events from your (Android&#x2F;ios) device calendar'
+  s.summary          = 'A new Flutter plugin.'
   s.description      = <<-DESC
-A flutter plugin which will help you add, edit and remove  the events from your (Android&#x2F;ios) device calendar
+A new Flutter plugin.
                        DESC
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }

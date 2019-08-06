@@ -61,6 +61,13 @@ class CalendarList extends StatelessWidget {
   }
 
   Future<List<Calendar>> _fetchCalendars() async {
+    _myPlugin.hasPermissions().then((value) {
+      debugPrint("hasPersmissions: $value");
+      if (!value) {
+        _myPlugin.requestPermissions();
+      }
+    });
+
     return _myPlugin.getCalendars();
   }
 }

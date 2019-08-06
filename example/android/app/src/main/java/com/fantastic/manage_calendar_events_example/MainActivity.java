@@ -1,4 +1,4 @@
-package in.fantastic.manage_calendar_events_example;
+package com.fantastic.manage_calendar_events_example;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

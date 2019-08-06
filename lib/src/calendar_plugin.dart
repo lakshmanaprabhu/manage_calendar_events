@@ -9,7 +9,7 @@ class CalendarPlugin {
     return version;
   }
 
-  static Future<bool> hasPermissions() async {
+  Future<bool> hasPermissions() async {
     bool hasPermission = false;
     try {
       hasPermission = await _channel.invokeMethod('hasPermissions');
@@ -19,6 +19,16 @@ class CalendarPlugin {
 
     print("hasPermissions - " + hasPermission.toString());
     return hasPermission;
+  }
+
+  Future<void> requestPermissions() async {
+    try {
+      await _channel.invokeMethod('requestPermissions');
+    } catch (e) {
+      print(e);
+    }
+
+    return;
   }
 
   Future<List<Calendar>> getCalendars() async {

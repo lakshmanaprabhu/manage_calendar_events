@@ -1,4 +1,4 @@
-package in.fantastic.manage_calendar_events;
+package com.fantastic.manage_calendar_events;
 
 import android.Manifest.permission;
 import android.app.Activity;
@@ -11,9 +11,9 @@ import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.util.Log;
-import in.fantastic.manage_calendar_events.models.Calendar;
-import in.fantastic.manage_calendar_events.models.CalendarEvent;
-import in.fantastic.manage_calendar_events.models.CalendarEvent.Reminder;
+import com.fantastic.manage_calendar_events.models.Calendar;
+import com.fantastic.manage_calendar_events.models.CalendarEvent;
+import com.fantastic.manage_calendar_events.models.CalendarEvent.Reminder;
 import java.util.ArrayList;
 
 public class CalendarOperations { // implements PluginRegistry.RequestPermissionsResultListener {

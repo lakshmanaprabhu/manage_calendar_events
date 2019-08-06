@@ -17,7 +17,7 @@
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
         <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
-        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/res/rs/debug;file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/res/resValues/debug" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/res/resValues/debug" />
         <option name="TEST_RES_FOLDERS_RELATIVE_PATH" value="" />
         <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
         <option name="PROJECT_TYPE" value="1" />
@@ -74,15 +74,15 @@
     </content>
     <content url="file://$MODULE_DIR$/../example/build/manage_calendar_events">
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/apt/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/aidl/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/aidl_source_output_dir/debug/compileDebugAidl/out" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/buildConfig/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/rs/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/renderscript_source_output_dir/debug/compileDebugRenderscript/out" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/res/rs/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/res/resValues/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/apt/androidTest/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/aidl/androidTest/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/aidl_source_output_dir/debugAndroidTest/compileDebugAndroidTestAidl/out" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/buildConfig/androidTest/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/rs/androidTest/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/renderscript_source_output_dir/debugAndroidTest/compileDebugAndroidTestRenderscript/out" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/res/rs/androidTest/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/res/resValues/androidTest/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/generated/source/apt/test/debug" isTestSource="true" generated="true" />
@@ -93,6 +93,9 @@
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/annotations_typedef_file" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/annotations_zip" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/check-manifest" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/check_manifest_result" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/compile_library_classes" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/compile_only_not_namespaced_r_class_jar" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/consumer_proguard_file" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/intermediate-jars" />
@@ -100,23 +103,30 @@
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/library_and_local_jars_jni" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/library_assets" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/library_java_res" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/library_manifest" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/lint_jar" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/lint_publish_jar" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/merged_jni_libs" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/merged_manifests" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/merged_shaders" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/packaged-classes" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/packaged_res" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/public_res" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/rs" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/runtime_library_classes" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/shader_assets" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/symbols" />
+      <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/intermediates/transforms" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/../example/build/manage_calendar_events/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 28 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: __local_aars__:/usr/local/google/home/ldeshingu/work/Flutter/flutter/bin/cache/artifacts/engine/android-arm64/flutter.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.4@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:/Users/lakshmanaprabhu/work/Flutter/flutter/bin/cache/artifacts/engine/android-arm64/flutter.jar:unspecified@jar" level="project" />
   </component>
 </module>
