@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:manage_calendar_events/manage_calendar_events.dart';
+import 'package:manage_calendar_events_example/screens/event_details.dart';
 
 class EventList extends StatefulWidget {
   final String calendarId;
@@ -47,6 +49,8 @@ class _EventListState extends State<EventList> {
                     return false;
                   }
                 },
+
+                // delete option
                 background: Container(
                   color: Colors.red,
                   alignment: Alignment.centerLeft,
@@ -56,6 +60,7 @@ class _EventListState extends State<EventList> {
                     color: Colors.white,
                   ),
                 ),
+                // update the event
                 secondaryBackground: Container(
                   color: Colors.blue,
                   alignment: Alignment.centerRight,
@@ -69,7 +74,21 @@ class _EventListState extends State<EventList> {
                   title: Text(event.title),
                   subtitle: Text(DateFormat("yyyy-MM-dd hh:mm:ss")
                       .format(event.startDate)),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return EventDetails(
+                            activeEvent: event,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  onLongPress: () {
+                    _deleteReminder(event.eventId);
+                  },
                 ),
               );
             },
@@ -123,5 +142,25 @@ class _EventListState extends State<EventList> {
         .then((eventId) {
       print("${event.eventId} is updated to $eventId");
     });
+
+    if (event.hasAlarm) {
+      _updateReminder(event.eventId, 65);
+    } else {
+      _addReminder(event.eventId, 40);
+    }
+  }
+
+  void _addReminder(String eventId, int minutes) async {
+    _myPlugin.addReminder(
+        calendarId: widget.calendarId, eventId: eventId, minutes: minutes);
+  }
+
+  void _updateReminder(String eventId, int minutes) async {
+    _myPlugin.updateReminder(
+        calendarId: widget.calendarId, eventId: eventId, minutes: minutes);
+  }
+
+  void _deleteReminder(String eventId) {
+    _myPlugin.deleteReminder(eventId: eventId);
   }
 }

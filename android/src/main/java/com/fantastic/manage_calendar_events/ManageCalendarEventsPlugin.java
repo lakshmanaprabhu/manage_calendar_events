@@ -84,11 +84,13 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
         } else if (call.method.equals("addReminder")) {
             String calendarId = call.argument("calendarId");
             String eventId = call.argument("eventId");
-            operations.addReminder(calendarId, eventId);
+            long minutes = Long.parseLong(call.<String>argument("minutes"));
+            operations.addReminder(calendarId, eventId, minutes);
         } else if (call.method.equals("updateReminder")) {
             String calendarId = call.argument("calendarId");
             String eventId = call.argument("eventId");
-            result.success(operations.updateReminder(calendarId, eventId));
+            long minutes = Long.parseLong(call.<String>argument("minutes"));
+            result.success(operations.updateReminder(calendarId, eventId, minutes));
         } else if (call.method.equals("deleteReminder")) {
             String eventId = call.argument("eventId");
             result.success(operations.deleteReminder(eventId));

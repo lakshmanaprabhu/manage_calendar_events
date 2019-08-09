@@ -38,6 +38,9 @@ class CalendarEvent {
     this.location = data["location"];
     this.isAllDay = data["isAllDay"];
     this.hasAlarm = data["hasAlarm"];
+    if (data["reminder"] != null) {
+      this.reminder = Reminder.fromJson(data["reminder"]);
+    }
   }
 
   setReminder(Reminder reminder) {

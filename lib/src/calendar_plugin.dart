@@ -75,6 +75,7 @@ class CalendarPlugin {
           'location': event.location,
           'isAllDay': event.isAllDay != null ? event.isAllDay : false,
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
+          'reminder': event.reminder != null ? event.reminder.minutes : null,
         },
       );
     } catch (e) {
@@ -99,6 +100,7 @@ class CalendarPlugin {
           'location': event.location,
           'isAllDay': event.isAllDay != null ? event.isAllDay : false,
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
+          'reminder': event.reminder != null ? event.reminder.minutes : null,
         },
       );
     } catch (e) {
@@ -123,13 +125,15 @@ class CalendarPlugin {
     return updateCount;
   }
 
-  Future<void> addReminder({String calendarId, String eventId}) async {
+  Future<void> addReminder(
+      {String calendarId, String eventId, int minutes}) async {
     try {
       await _channel.invokeMethod(
         'addReminder',
         <String, Object>{
           "calendarId": calendarId,
           'eventId': eventId,
+          'minutes': minutes.toString(),
         },
       );
     } catch (e) {
@@ -137,7 +141,8 @@ class CalendarPlugin {
     }
   }
 
-  Future<int> updateReminder({String calendarId, String eventId}) async {
+  Future<int> updateReminder(
+      {String calendarId, String eventId, int minutes}) async {
     int updateCount = 0;
     try {
       updateCount = await _channel.invokeMethod(
@@ -145,6 +150,7 @@ class CalendarPlugin {
         <String, Object>{
           "calendarId": calendarId,
           'eventId': eventId,
+          'minutes': minutes.toString(),
         },
       );
     } catch (e) {
