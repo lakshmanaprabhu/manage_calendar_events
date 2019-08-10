@@ -77,7 +77,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 hasAlarm: hasAlarm,
                 reminder: reminder
             )
-            self.createOrUpdateEvent(calendarId: calendarId, event: &event)
+            self.createUpdateEvent(calendarId: calendarId, event: &event)
             result(event.eventId)
         } else if (call.method == "deleteEvent") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
@@ -192,7 +192,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         return jsonString
     }
 
-    private func createOrUpdateEvent(calendarId: String, event: inout CalendarEvent) {
+    private func createUpdateEvent(calendarId: String, event: inout CalendarEvent) {
         if(!hasPermissions()) {
             requestPermissions()
         }

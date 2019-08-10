@@ -1,14 +1,28 @@
 # manage_calendar_events
 
-A new Flutter plugin.
+A flutter plugin which will help you to add, edit and remove the events (with reminders) from your (Android and ios) calendars
 
-## Getting Started
+## What are the features available?
+* can read all the available calendars in your device (Android and ios)
+* can read all the events from the selected calendar
+* can add an event with title, description, start date, end date and a reminder in your selected calendar
+* can update or delete the selected event
+* can add, update and remove the reminders (/alarms in ios)
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+## For Android
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Android support is used a Java code and it requires a following permissions
+
+```xml
+<uses-permission android:name="android.permission.READ_CALENDAR" />
+<uses-permission android:name="android.permission.WRITE_CALENDAR" />
+```
+
+## For iOS
+
+iOS support is used a swift code and it requires a following permissions to add in info.plist
+
+```xml
+<key>NSCalendarsUsageDescription</key>
+<string>INSERT_REASON_HERE</string>
+```
