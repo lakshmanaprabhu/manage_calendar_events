@@ -9,6 +9,7 @@ class CalendarPlugin {
     return version;
   }
 
+  /// Check your app has permissions to access the calendar events
   Future<bool> hasPermissions() async {
     bool hasPermission = false;
     try {
@@ -21,6 +22,7 @@ class CalendarPlugin {
     return hasPermission;
   }
 
+  /// Request the app to fetch the permissions to access the calendar
   Future<void> requestPermissions() async {
     try {
       await _channel.invokeMethod('requestPermissions');
@@ -31,6 +33,7 @@ class CalendarPlugin {
     return;
   }
 
+  /// Returns the available calendars from the device
   Future<List<Calendar>> getCalendars() async {
     List<Calendar> calendars = List();
     try {
@@ -44,6 +47,7 @@ class CalendarPlugin {
     return calendars;
   }
 
+  /// Returns all the available events in the selected calendar
   Future<List<CalendarEvent>> getEvents({String calendarId}) async {
     List<CalendarEvent> events = List();
     try {
@@ -59,6 +63,7 @@ class CalendarPlugin {
     return events;
   }
 
+  /// Helps to create an event in the selected calendar
   Future<String> createEvent({String calendarId, CalendarEvent event}) async {
     String eventId;
 
@@ -84,6 +89,7 @@ class CalendarPlugin {
     return eventId;
   }
 
+  /// Helps to update the edited event
   Future<String> updateEvent({String calendarId, CalendarEvent event}) async {
     String eventId;
 
@@ -109,6 +115,7 @@ class CalendarPlugin {
     return eventId;
   }
 
+  /// Deletes the selected event in the selected calendar
   Future<int> deleteEvent({String calendarId, String eventId}) async {
     int updateCount = 0;
     try {
@@ -125,6 +132,7 @@ class CalendarPlugin {
     return updateCount;
   }
 
+  /// Helps to add reminder in Android [add alarms in iOS]
   Future<void> addReminder(
       {String calendarId, String eventId, int minutes}) async {
     try {
@@ -141,6 +149,7 @@ class CalendarPlugin {
     }
   }
 
+  /// Helps to update the selected reminder
   Future<int> updateReminder(
       {String calendarId, String eventId, int minutes}) async {
     int updateCount = 0;
@@ -159,6 +168,7 @@ class CalendarPlugin {
     return updateCount;
   }
 
+  /// Helps to delete the selected event's reminder
   Future<int> deleteReminder({String eventId}) async {
     int updateCount = 0;
     try {
