@@ -50,7 +50,7 @@ class CalendarList extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   "Calendars List",
-                  style: Theme.of(context).textTheme.title,
+                  style: Theme.of(context).textTheme.headline6,
                 ),
               ),
             ),

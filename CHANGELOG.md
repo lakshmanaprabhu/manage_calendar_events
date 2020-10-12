@@ -1,3 +1,8 @@
+## 1.0.3
+
+* Added support for latest Android and iOS SDK
+* Fixed a minor issue for iOS
+
 ## 1.0.1
 
 * Added dartdoc comment for APIs

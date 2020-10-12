@@ -38,7 +38,10 @@ class _EventListState extends State<EventList> {
                 confirmDismiss: (direction) async {
                   if (DismissDirection.startToEnd == direction) {
                     print("startToEnd");
-                    _deleteEvent(event.eventId);
+                    setState(() {
+                      _deleteEvent(event.eventId);
+                    });
+
                     return true;
                   } else {
                     print("endToStart");
@@ -129,8 +132,8 @@ class _EventListState extends State<EventList> {
   void _deleteEvent(String eventId) async {
     _myPlugin
         .deleteEvent(calendarId: widget.calendarId, eventId: eventId)
-        .then((count) {
-      print("Updated count is: $count");
+        .then((isDeleted) {
+      print("Is Event deleted: $isDeleted");
     });
   }
 

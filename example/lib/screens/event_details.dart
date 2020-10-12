@@ -21,7 +21,7 @@ class EventDetails extends StatelessWidget {
             children: <Widget>[
               Text(
                 "Description: ${this.activeEvent.description}",
-                style: Theme.of(context).textTheme.title,
+                style: Theme.of(context).textTheme.headline6,
               ),
               SizedBox(height: 20),
               Text("Start Date: ${this.activeEvent.startDate}"),

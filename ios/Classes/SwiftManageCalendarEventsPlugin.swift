@@ -61,7 +61,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             let description = arguments["description"] as! String
             let startDate = arguments["startDate"] as! Int64
             let endDate = arguments["endDate"] as! Int64
-            let location = arguments["location"] as! String
+            let location = arguments["location"] as? String
             let isAllDay = arguments["isAllDay"] as! Bool
             let hasAlarm = arguments["hasAlarm"] as! Bool
             let reminder = arguments["reminder"] as? Reminder

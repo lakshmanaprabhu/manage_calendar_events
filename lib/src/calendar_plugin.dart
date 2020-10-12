@@ -116,10 +116,10 @@ class CalendarPlugin {
   }
 
   /// Deletes the selected event in the selected calendar
-  Future<int> deleteEvent({String calendarId, String eventId}) async {
-    int updateCount = 0;
+  Future<bool> deleteEvent({String calendarId, String eventId}) async {
+    bool isDeleted = false;
     try {
-      updateCount = await _channel.invokeMethod(
+      isDeleted = await _channel.invokeMethod(
         'deleteEvent',
         <String, Object>{
           "calendarId": calendarId,
@@ -129,7 +129,7 @@ class CalendarPlugin {
     } catch (e) {
       print(e);
     }
-    return updateCount;
+    return isDeleted;
   }
 
   /// Helps to add reminder in Android [add alarms in iOS]
