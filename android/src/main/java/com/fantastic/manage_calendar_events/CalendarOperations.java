@@ -224,7 +224,9 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         values.put(Events.CALENDAR_ID, calendarId);
         values.put(Events.EVENT_TIMEZONE, currentTimeZone);
         values.put(Events.HAS_ALARM, event.isHasAlarm());
-        values.put(Events.EVENT_LOCATION, event.getLocation());
+        if (event.getLocation() != null) {
+            values.put(Events.EVENT_LOCATION, event.getLocation());
+        }
 
         try {
             if (eventId == null) {

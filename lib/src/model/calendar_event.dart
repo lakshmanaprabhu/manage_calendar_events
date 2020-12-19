@@ -14,14 +14,14 @@ class CalendarEvent {
 
   CalendarEvent(
       {this.eventId,
-      this.title,
-      this.description,
-      this.startDate,
-      this.endDate,
+      this.title = '',
+      this.description = '',
+      @required this.startDate,
+      @required this.endDate,
       this.location,
       this.duration,
-      this.isAllDay,
-      this.hasAlarm});
+      this.isAllDay = false,
+      this.hasAlarm = false});
 
   CalendarEvent.fromJson(Map<String, dynamic> data) {
     this.eventId = data["eventId"];
@@ -51,7 +51,7 @@ class CalendarEvent {
 class Reminder {
   final int minutes;
 
-  Reminder({this.minutes});
+  Reminder({@required this.minutes});
 
   Reminder.fromJson(Map<String, dynamic> data) : this.minutes = data["minutes"];
 }

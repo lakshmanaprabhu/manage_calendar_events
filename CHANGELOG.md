@@ -1,3 +1,6 @@
+## 1.0.4
+* Added the required values to avoid unnecessary errors
+
 ## 1.0.3
 
 * Added support for latest Android and iOS SDK

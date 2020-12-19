@@ -115,11 +115,12 @@ class _EventListState extends State<EventList> {
     DateTime startDate = DateTime.now();
     DateTime endDate = startDate.add(Duration(hours: 3));
     CalendarEvent _newEvent = CalendarEvent(
-        title: "Event from plugin",
-        description: "test plugin description",
-        startDate: startDate,
-        endDate: endDate,
-        location: "Chennai, Tamilnadu");
+      title: "Event from plugin",
+      description: "test plugin description",
+      startDate: startDate,
+      endDate: endDate,
+      location: "Chennai, Tamilnadu",
+    );
     _myPlugin
         .createEvent(calendarId: widget.calendarId, event: _newEvent)
         .then((evenId) {
