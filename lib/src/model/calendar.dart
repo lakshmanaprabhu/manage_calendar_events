@@ -6,7 +6,7 @@ class Calendar {
   String accountName;
   String ownerName;
 
-  Calendar({this.id, this.name, this.accountName, this.ownerName});
+  Calendar({@required this.id, this.name, this.accountName, this.ownerName});
 
   Calendar.fromJson(Map<String, dynamic> data) {
     this.id = data["id"];

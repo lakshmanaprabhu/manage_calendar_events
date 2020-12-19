@@ -202,6 +202,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let startDate = Date (timeIntervalSince1970: Double(event.startDate) / 1000.0)
         let endDate = Date (timeIntervalSince1970: Double(event.endDate) / 1000.0)
         let reminder = event.reminder
+        let location = event.location
 
         let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
         //        if (!(ekCalendar!.allowsContentModifications)) {
@@ -223,6 +224,10 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         ekEvent!.startDate = startDate
         ekEvent!.endDate = endDate
         ekEvent!.calendar = ekCalendar!
+        
+        if(location != nil) {
+            ekEvent!.location = location
+        }
 
         if(reminder != nil) {
             let alarm = EKAlarm.init(absoluteDate: Date.init(timeInterval: 1800, since: Date (timeIntervalSince1970: Double(event.startDate) / 1000.0)))
