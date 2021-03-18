@@ -4,14 +4,14 @@ class CalendarPlugin {
   static const MethodChannel _channel =
       const MethodChannel('manage_calendar_events');
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
+  static Future<String?> get platformVersion async {
+    final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
 
   /// Check your app has permissions to access the calendar events
-  Future<bool> hasPermissions() async {
-    bool hasPermission = false;
+  Future<bool?> hasPermissions() async {
+    bool? hasPermission = false;
     try {
       hasPermission = await _channel.invokeMethod('hasPermissions');
     } catch (e) {
@@ -34,8 +34,8 @@ class CalendarPlugin {
   }
 
   /// Returns the available calendars from the device
-  Future<List<Calendar>> getCalendars() async {
-    List<Calendar> calendars = List();
+  Future<List<Calendar>?> getCalendars() async {
+    List<Calendar>? calendars = [];
     try {
       String calendarsJson = await _channel.invokeMethod('getCalendars');
       calendars = json.decode(calendarsJson).map<Calendar>((decodedCalendar) {
@@ -48,11 +48,11 @@ class CalendarPlugin {
   }
 
   /// Returns all the available events in the selected calendar
-  Future<List<CalendarEvent>> getEvents({String calendarId}) async {
-    List<CalendarEvent> events = List();
+  Future<List<CalendarEvent>?> getEvents({String? calendarId}) async {
+    List<CalendarEvent>? events = [];
     try {
       String eventsJson = await _channel.invokeMethod(
-          'getEvents', <String, Object>{"calendarId": calendarId});
+          'getEvents', <String, Object?>{"calendarId": calendarId});
       events =
           json.decode(eventsJson).map<CalendarEvent>((decodedCalendarEvent) {
         return CalendarEvent.fromJson(decodedCalendarEvent);
@@ -64,23 +64,24 @@ class CalendarPlugin {
   }
 
   /// Helps to create an event in the selected calendar
-  Future<String> createEvent({String calendarId, CalendarEvent event}) async {
-    String eventId;
+  Future<String?> createEvent(
+      {String? calendarId, required CalendarEvent event}) async {
+    String? eventId;
 
     try {
       eventId = await _channel.invokeMethod(
         'createEvent',
-        <String, Object>{
+        <String, Object?>{
           "calendarId": calendarId,
           'eventId': event.eventId != null ? event.eventId : null,
           'title': event.title,
           'description': event.description,
-          'startDate': event.startDate.millisecondsSinceEpoch,
-          'endDate': event.endDate.millisecondsSinceEpoch,
+          'startDate': event.startDate!.millisecondsSinceEpoch,
+          'endDate': event.endDate!.millisecondsSinceEpoch,
           'location': event.location,
           'isAllDay': event.isAllDay != null ? event.isAllDay : false,
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
-          'reminder': event.reminder != null ? event.reminder.minutes : null,
+          'reminder': event.reminder != null ? event.reminder!.minutes : null,
         },
       );
     } catch (e) {
@@ -90,23 +91,24 @@ class CalendarPlugin {
   }
 
   /// Helps to update the edited event
-  Future<String> updateEvent({String calendarId, CalendarEvent event}) async {
-    String eventId;
+  Future<String?> updateEvent(
+      {String? calendarId, required CalendarEvent event}) async {
+    String? eventId;
 
     try {
       eventId = await _channel.invokeMethod(
         'updateEvent',
-        <String, Object>{
+        <String, Object?>{
           "calendarId": calendarId,
           'eventId': event.eventId != null ? event.eventId : null,
           'title': event.title,
           'description': event.description,
-          'startDate': event.startDate.millisecondsSinceEpoch,
-          'endDate': event.endDate.millisecondsSinceEpoch,
+          'startDate': event.startDate!.millisecondsSinceEpoch,
+          'endDate': event.endDate!.millisecondsSinceEpoch,
           'location': event.location,
           'isAllDay': event.isAllDay != null ? event.isAllDay : false,
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
-          'reminder': event.reminder != null ? event.reminder.minutes : null,
+          'reminder': event.reminder != null ? event.reminder!.minutes : null,
         },
       );
     } catch (e) {
@@ -116,12 +118,12 @@ class CalendarPlugin {
   }
 
   /// Deletes the selected event in the selected calendar
-  Future<bool> deleteEvent({String calendarId, String eventId}) async {
-    bool isDeleted = false;
+  Future<bool?> deleteEvent({String? calendarId, String? eventId}) async {
+    bool? isDeleted = false;
     try {
       isDeleted = await _channel.invokeMethod(
         'deleteEvent',
-        <String, Object>{
+        <String, Object?>{
           "calendarId": calendarId,
           'eventId': eventId,
         },
@@ -134,11 +136,11 @@ class CalendarPlugin {
 
   /// Helps to add reminder in Android [add alarms in iOS]
   Future<void> addReminder(
-      {String calendarId, String eventId, int minutes}) async {
+      {String? calendarId, String? eventId, int? minutes}) async {
     try {
       await _channel.invokeMethod(
         'addReminder',
-        <String, Object>{
+        <String, Object?>{
           "calendarId": calendarId,
           'eventId': eventId,
           'minutes': minutes.toString(),
@@ -150,13 +152,13 @@ class CalendarPlugin {
   }
 
   /// Helps to update the selected reminder
-  Future<int> updateReminder(
-      {String calendarId, String eventId, int minutes}) async {
-    int updateCount = 0;
+  Future<int?> updateReminder(
+      {String? calendarId, String? eventId, int? minutes}) async {
+    int? updateCount = 0;
     try {
       updateCount = await _channel.invokeMethod(
         'updateReminder',
-        <String, Object>{
+        <String, Object?>{
           "calendarId": calendarId,
           'eventId': eventId,
           'minutes': minutes.toString(),
@@ -169,12 +171,12 @@ class CalendarPlugin {
   }
 
   /// Helps to delete the selected event's reminder
-  Future<int> deleteReminder({String eventId}) async {
-    int updateCount = 0;
+  Future<int?> deleteReminder({String? eventId}) async {
+    int? updateCount = 0;
     try {
       updateCount = await _channel.invokeMethod(
         'deleteReminder',
-        <String, Object>{
+        <String, Object?>{
           'eventId': eventId,
         },
       );

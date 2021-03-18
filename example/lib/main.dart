@@ -23,10 +23,10 @@ class CalendarPluginCheck extends StatelessWidget {
         title: const Text('Plugin example app'),
       ),
       body: Center(
-        child: RaisedButton(
+        child: ElevatedButton(
           onPressed: () {
             _myPlugin.hasPermissions().then((value) {
-              if (!value) {
+              if (!value!) {
                 _myPlugin.requestPermissions();
               } else {
                 Navigator.push(context,

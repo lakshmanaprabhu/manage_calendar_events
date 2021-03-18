@@ -5,13 +5,13 @@ import 'package:manage_calendar_events/manage_calendar_events.dart';
 class EventDetails extends StatelessWidget {
   final CalendarEvent activeEvent;
 
-  EventDetails({this.activeEvent});
+  EventDetails({required this.activeEvent});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.activeEvent.title),
+        title: Text(this.activeEvent.title!),
       ),
       body: SingleChildScrollView(
         child: Padding(

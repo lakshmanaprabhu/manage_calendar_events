@@ -5,9 +5,9 @@ import 'package:manage_calendar_events/manage_calendar_events.dart';
 import 'package:manage_calendar_events_example/screens/event_details.dart';
 
 class EventList extends StatefulWidget {
-  final String calendarId;
+  final String? calendarId;
 
-  EventList({this.calendarId});
+  EventList({required this.calendarId});
 
   @override
   _EventListState createState() => _EventListState();
@@ -22,24 +22,24 @@ class _EventListState extends State<EventList> {
       appBar: AppBar(
         title: Text("Events List"),
       ),
-      body: FutureBuilder(
+      body: FutureBuilder<List<CalendarEvent>?>(
         future: _fetchEvents(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(child: Text("No Events found"));
           }
-          List<CalendarEvent> events = snapshot.data;
+          List<CalendarEvent> events = snapshot.data!;
           return ListView.builder(
             itemCount: events.length,
             itemBuilder: (context, index) {
               CalendarEvent event = events.elementAt(index);
               return Dismissible(
-                key: Key(event.eventId),
+                key: Key(event.eventId!),
                 confirmDismiss: (direction) async {
                   if (DismissDirection.startToEnd == direction) {
                     print("startToEnd");
                     setState(() {
-                      _deleteEvent(event.eventId);
+                      _deleteEvent(event.eventId!);
                     });
 
                     return true;
@@ -74,9 +74,9 @@ class _EventListState extends State<EventList> {
                   ),
                 ),
                 child: ListTile(
-                  title: Text(event.title),
+                  title: Text(event.title!),
                   subtitle: Text(DateFormat("yyyy-MM-dd hh:mm:ss")
-                      .format(event.startDate)),
+                      .format(event.startDate!)),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -90,7 +90,7 @@ class _EventListState extends State<EventList> {
                     );
                   },
                   onLongPress: () {
-                    _deleteReminder(event.eventId);
+                    _deleteReminder(event.eventId!);
                   },
                 ),
               );
@@ -107,7 +107,7 @@ class _EventListState extends State<EventList> {
     );
   }
 
-  _fetchEvents() async {
+  Future<List<CalendarEvent>?> _fetchEvents() async {
     return _myPlugin.getEvents(calendarId: this.widget.calendarId);
   }
 
@@ -147,10 +147,10 @@ class _EventListState extends State<EventList> {
       print("${event.eventId} is updated to $eventId");
     });
 
-    if (event.hasAlarm) {
-      _updateReminder(event.eventId, 65);
+    if (event.hasAlarm!) {
+      _updateReminder(event.eventId!, 65);
     } else {
-      _addReminder(event.eventId, 40);
+      _addReminder(event.eventId!, 40);
     }
   }
 

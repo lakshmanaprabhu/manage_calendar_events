@@ -1,12 +1,12 @@
 part of manage_calendar_events;
 
 class Calendar {
-  String id;
-  String name;
-  String accountName;
-  String ownerName;
+  String? id;
+  String? name;
+  String? accountName;
+  String? ownerName;
 
-  Calendar({@required this.id, this.name, this.accountName, this.ownerName});
+  Calendar({required this.id, this.name, this.accountName, this.ownerName});
 
   Calendar.fromJson(Map<String, dynamic> data) {
     this.id = data["id"];

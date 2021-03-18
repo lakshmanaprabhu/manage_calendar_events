@@ -1,23 +1,23 @@
 part of manage_calendar_events;
 
 class CalendarEvent {
-  String eventId;
-  String title;
-  String description;
-  DateTime startDate;
-  DateTime endDate;
-  String location;
-  int duration;
-  bool isAllDay;
-  bool hasAlarm;
-  Reminder reminder;
+  String? eventId;
+  String? title;
+  String? description;
+  DateTime? startDate;
+  DateTime? endDate;
+  String? location;
+  int? duration;
+  bool? isAllDay;
+  bool? hasAlarm;
+  Reminder? reminder;
 
   CalendarEvent(
       {this.eventId,
       this.title = '',
       this.description = '',
-      @required this.startDate,
-      @required this.endDate,
+      required this.startDate,
+      required this.endDate,
       this.location,
       this.duration,
       this.isAllDay = false,
@@ -49,9 +49,9 @@ class CalendarEvent {
 }
 
 class Reminder {
-  final int minutes;
+  final int? minutes;
 
-  Reminder({@required this.minutes});
+  Reminder({required this.minutes});
 
   Reminder.fromJson(Map<String, dynamic> data) : this.minutes = data["minutes"];
 }

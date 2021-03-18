@@ -8,20 +8,20 @@ class CalendarList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget _futureBuilder = FutureBuilder(
+    Widget _futureBuilder = FutureBuilder<List<Calendar>?>(
       future: _fetchCalendars(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container();
         }
-        List<Calendar> calendars = snapshot.data;
+        List<Calendar> calendars = snapshot.data!;
         return ListView.builder(
             shrinkWrap: true,
             itemCount: calendars.length,
             itemBuilder: (context, index) {
               Calendar calendar = calendars[index];
               return ListTile(
-                title: Text(calendar.name),
+                title: Text(calendar.name!),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -61,10 +61,10 @@ class CalendarList extends StatelessWidget {
     );
   }
 
-  Future<List<Calendar>> _fetchCalendars() async {
+  Future<List<Calendar>?> _fetchCalendars() async {
     _myPlugin.hasPermissions().then((value) {
       debugPrint("hasPersmissions: $value");
-      if (!value) {
+      if (!value!) {
         _myPlugin.requestPermissions();
       }
     });

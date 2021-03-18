@@ -9,3 +9,6 @@ example/android/android.iml
 example/android/gradlew
 example/android/local.properties
 example/ios/Podfile
+.dart_tool
+.flutter-plugins-dependencies
+Flutter.podspec
