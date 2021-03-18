@@ -1,3 +1,6 @@
+## 1.0.5
+* Added Null Safety support
+
 ## 1.0.4
 * Added the required values to avoid unnecessary errors
 
