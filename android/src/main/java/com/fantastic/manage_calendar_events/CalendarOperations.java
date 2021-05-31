@@ -76,14 +76,16 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         try {
             while (cur.moveToNext()) {
                 String calenderId = cur.getLong(cur.getColumnIndex(Calendars._ID)) + "";
+//                Log.d("XXX", "calenderId: "+calenderId);
                 String displayName = cur
                         .getString(cur.getColumnIndex(Calendars.CALENDAR_DISPLAY_NAME));
+//                Log.d("XXX", "Display Name: "+displayName);
                 String accountName = cur
                         .getString(cur.getColumnIndex(Calendars.ACCOUNT_NAME));
                 String ownerName = cur
                         .getString(cur.getColumnIndex(Calendars.OWNER_ACCOUNT));
                 Calendar calendar = new Calendar(calenderId, displayName, accountName, ownerName);
-                // Log.d("XXX", calendar.toString());
+//                Log.d("XXX", calendar.toString());
                 calendarList.add(calendar);
             }
         } catch (Exception e) {
@@ -91,6 +93,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         } finally {
             cur.close();
         }
+        Log.d("XXX", calendarList.toString());
         return calendarList;
     }
 
@@ -223,6 +226,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         values.put(Events.DESCRIPTION, event.getDescription());
         values.put(Events.CALENDAR_ID, calendarId);
         values.put(Events.EVENT_TIMEZONE, currentTimeZone);
+        values.put(Events.ALL_DAY, event.isAllDay());
         values.put(Events.HAS_ALARM, event.isHasAlarm());
         if (event.getLocation() != null) {
             values.put(Events.EVENT_LOCATION, event.getLocation());

@@ -203,6 +203,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let endDate = Date (timeIntervalSince1970: Double(event.endDate) / 1000.0)
         let reminder = event.reminder
         let location = event.location
+        let isAllDay = event.isAllDay
 
         let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
         //        if (!(ekCalendar!.allowsContentModifications)) {
@@ -224,7 +225,8 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         ekEvent!.startDate = startDate
         ekEvent!.endDate = endDate
         ekEvent!.calendar = ekCalendar!
-        
+        ekEvent!.isAllDay = isAllDay
+
         if(location != nil) {
             ekEvent!.location = location
         }

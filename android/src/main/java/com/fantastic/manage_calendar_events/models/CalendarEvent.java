@@ -1,16 +1,28 @@
 package com.fantastic.manage_calendar_events.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public final class CalendarEvent {
 
+  @SerializedName("eventId")
   private String eventId;
+  @SerializedName("title")
   private String title;
+  @SerializedName("description")
   private String description;
+  @SerializedName("startDate")
   private long startDate;
+  @SerializedName("endDate")
   private long endDate;
+  @SerializedName("location")
   private String location;
+  @SerializedName("duration")
   private long duration;
+  @SerializedName("isAllDay")
   private boolean isAllDay;
+  @SerializedName("hasAlarm")
   private boolean hasAlarm;
+  @SerializedName("reminder")
   private Reminder reminder;
 
   public CalendarEvent(String eventId, String title, String description, long startDate,

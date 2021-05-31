@@ -1,3 +1,7 @@
+## 1.0.6
+* Fixed the Android release mode issue
+* Added isAllDay flag in event as suggested by @sageata
+
 ## 1.0.5
 * Added Null Safety support
 
