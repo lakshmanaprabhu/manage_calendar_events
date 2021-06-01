@@ -20,6 +20,17 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class ManageCalendarEventsPlugin implements MethodCallHandler {
 
+    private final MethodChannel methodChannel;
+    private final CalendarOperations operations;
+    private final Gson gson = new Gson();
+
+    public ManageCalendarEventsPlugin(MethodChannel methodChannel, CalendarOperations operations) {
+        this.methodChannel = methodChannel;
+        this.methodChannel.setMethodCallHandler(this);
+
+        this.operations = operations;
+    }
+
     /**
      * Plugin registration.
      */
@@ -36,19 +47,6 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
         // registrar.addRequestPermissionsResultListener(CalendarOperations);
     }
 
-
-    private final MethodChannel methodChannel;
-    private final CalendarOperations operations;
-
-    private final Gson gson = new Gson();
-
-    public ManageCalendarEventsPlugin(MethodChannel methodChannel, CalendarOperations operations) {
-        this.methodChannel = methodChannel;
-        this.methodChannel.setMethodCallHandler(this);
-
-        this.operations = operations;
-    }
-
     @Override
     public void onMethodCall(MethodCall call, Result result) {
         if (call.method.equals("getPlatformVersion")) {
@@ -62,7 +60,12 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
             result.success(gson.toJson(calendarArrayList));
         } else if (call.method.equals("getEvents")) {
             String calendarId = call.argument("calendarId");
-            result.success(gson.toJson(operations.getEvents(calendarId)));
+            result.success(gson.toJson(operations.getAllEvents(calendarId)));
+        } else if (call.method.equals("getEventsByDateRange")) {
+            String calendarId = call.argument("calendarId");
+            long startDate = call.argument("startDate");
+            long endDate = call.argument("endDate");
+            result.success(gson.toJson(operations.getEventsByDateRange(calendarId, startDate, endDate)));
         } else if (call.method.equals("createEvent") || call.method.equals("updateEvent")) {
             String calendarId = call.argument("calendarId");
             String eventId = call.argument("eventId");

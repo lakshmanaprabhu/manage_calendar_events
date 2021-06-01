@@ -97,11 +97,30 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         return calendarList;
     }
 
-    public ArrayList<CalendarEvent> getEvents(String calendarId) {
+    public ArrayList<CalendarEvent> getAllEvents(String calendarId) {
+        String selection =
+                Events.CALENDAR_ID + " = " + calendarId + " AND " + Events.DELETED + " != 1";
+        return getEvents(selection);
+    }
+
+    public ArrayList<CalendarEvent> getEventsByDateRange(String calendarId, long startDate, long endDate) {
+//        Log.d("XXX", "StartDate is: "+startDate+" and EndDate is: "+endDate);
+        String selection =
+                Events.CALENDAR_ID + " = " + calendarId + " AND " + Events.DELETED
+                        + " != 1 AND ((" + Events.DTSTART + " >= " + startDate + ") AND (" + Events.DTEND + " <= " + endDate + "))";
+        return getEvents(selection);
+    }
+
+    /**
+     * Return all the events from calendar which satisfies the given query selection
+     *
+     * @param selection - Conditions to filter the calendar events
+     * @return List of Calendar events
+     */
+    public ArrayList<CalendarEvent> getEvents(String selection) {
         if (!hasPermissions()) {
             requestPermissions();
         }
-        Cursor cur = null;
         ContentResolver cr = activity.getContentResolver();
 
         ArrayList<CalendarEvent> calendarEvents = new ArrayList<>();
@@ -121,12 +140,12 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                 };
 
         Uri uri = Events.CONTENT_URI;
-        String selection =
-                Events.CALENDAR_ID + " = " + calendarId + " AND " + Events.DELETED + " != 1";
-        // String[] selectionArgs = new String[]{"London"};
+//        String selection =
+//                Events.CALENDAR_ID + " = " + calendarId + " AND " + Events.DELETED + " != 1";
+        // String[] selectionArgs = new String[]{"Chennai, Tamilnadu"};
         String eventsSortOrder = Events.DTSTART + " ASC";
 
-        cur = cr.query(uri, mProjection, selection, null, eventsSortOrder);
+        Cursor cur = cr.query(uri, mProjection, selection, null, eventsSortOrder);
 
         try {
             while (cur.moveToNext()) {
@@ -144,7 +163,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                 CalendarEvent event = new CalendarEvent(eventId, title, desc, startDate, endDate,
                         location,
                         isAllDay, hasAlarm);
-                // Log.d("XXX", " " + event.toString());
+//                Log.d("XXX", " " + event.toString());
                 calendarEvents.add(event);
             }
         } catch (Exception e) {
@@ -161,7 +180,6 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         if (!hasPermissions()) {
             requestPermissions();
         }
-        Cursor cur = null;
         ContentResolver cr = activity.getContentResolver();
         String[] mProjection =
                 {
@@ -181,7 +199,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                 Events.CALENDAR_ID + " = " + calendarId + " AND " + CalendarContract.Instances._ID
                         + " = " + eventId;
 
-        cur = cr.query(uri, mProjection, selection, null, null);
+        Cursor cur = cr.query(uri, mProjection, selection, null, null);
         CalendarEvent event = null;
 
         try {

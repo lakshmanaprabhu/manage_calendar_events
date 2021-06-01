@@ -52,7 +52,13 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         } else if (call.method == "getEvents") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
             let calendarId = arguments["calendarId"] as! String
-            result(self.getEvents(calendarId: calendarId))
+            result(self.getAllEvents(calendarId: calendarId))
+        } else if (call.method == "getEventsByDateRange") {
+            let arguments = call.arguments as! Dictionary<String, AnyObject>
+            let calendarId = arguments["calendarId"] as! String
+            let startDate = arguments["startDate"] as! Int64
+            let endDate = arguments["endDate"] as! Int64
+            result(self.getEventsByDateRange(calendarId: calendarId, startDate: startDate, endDate: endDate))
         } else if ((call.method == "createEvent") || (call.method == "updateEvent")) {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
             let calendarId = arguments["calendarId"] as! String
@@ -146,8 +152,8 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
         return jsonString
     }
-
-    private func getEvents(calendarId: String) -> String? {
+    
+    private func getAllEvents(calendarId: String) -> String? {
         if(!hasPermissions()) {
             requestPermissions()
         }
@@ -155,6 +161,23 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let startDate = NSDate(timeIntervalSinceNow: -60 * 60 * 24 * 180)
         let endDate = NSDate(timeIntervalSinceNow: 60 * 60 * 24 * 180)
         let predicate = eventStore.predicateForEvents(withStart: startDate as Date, end: endDate as Date, calendars: [selectedCalendar!])
+        
+        return getEvents(predicate: predicate)
+    }
+    
+    private func getEventsByDateRange(calendarId: String, startDate: Int64, endDate: Int64) -> String? {
+        if(!hasPermissions()) {
+            requestPermissions()
+        }
+        let selectedCalendar = self.eventStore.calendar(withIdentifier: calendarId)
+        let startDate = Date (timeIntervalSince1970: Double(startDate) / 1000.0)
+        let endDate = Date (timeIntervalSince1970: Double(endDate) / 1000.0)
+        let predicate = eventStore.predicateForEvents(withStart: startDate as Date, end: endDate as Date, calendars: [selectedCalendar!])
+        
+        return getEvents(predicate: predicate)
+    }
+
+    private func getEvents(predicate: NSPredicate) -> String? {
         let ekEvents = self.eventStore.events(matching: predicate)
 
         var events = [CalendarEvent]()

@@ -1,3 +1,6 @@
+## 1.0.7
+* Implemented a way to filter the events by Week, Month and given dates
+
 ## 1.0.6
 * Fixed the Android release mode issue
 * Added isAllDay flag in event as suggested by @sageata

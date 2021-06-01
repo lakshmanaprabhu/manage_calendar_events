@@ -5,7 +5,7 @@ import 'package:manage_calendar_events/manage_calendar_events.dart';
 import 'package:manage_calendar_events_example/screens/event_details.dart';
 
 class EventList extends StatefulWidget {
-  final String? calendarId;
+  final String calendarId;
 
   EventList({required this.calendarId});
 
@@ -109,6 +109,25 @@ class _EventListState extends State<EventList> {
 
   Future<List<CalendarEvent>?> _fetchEvents() async {
     return _myPlugin.getEvents(calendarId: this.widget.calendarId);
+    // return _fetchEventsByDateRange();
+    // return _myPlugin.getEventsByMonth(
+    //     calendarId: this.widget.calendarId,
+    //     findDate: DateTime(2020, DateTime.december, 15));
+    // return _myPlugin.getEventsByWeek(
+    //     calendarId: this.widget.calendarId,
+    //     findDate: DateTime(2021, DateTime.june, 1));
+  }
+
+  // ignore: unused_element
+  Future<List<CalendarEvent>?> _fetchEventsByDateRange() async {
+    DateTime endDate =
+        DateTime.now().toUtc().add(Duration(hours: 23, minutes: 59));
+    DateTime startDate = endDate.subtract(Duration(days: 3));
+    return _myPlugin.getEventsByDateRange(
+      calendarId: this.widget.calendarId,
+      startDate: startDate,
+      endDate: endDate,
+    );
   }
 
   void _addEvent() async {

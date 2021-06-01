@@ -48,7 +48,7 @@ class CalendarPlugin {
   }
 
   /// Returns all the available events in the selected calendar
-  Future<List<CalendarEvent>?> getEvents({String? calendarId}) async {
+  Future<List<CalendarEvent>?> getEvents({required String calendarId}) async {
     List<CalendarEvent>? events = [];
     try {
       String eventsJson = await _channel.invokeMethod(
@@ -63,16 +63,66 @@ class CalendarPlugin {
     return events;
   }
 
+  /// Returns all the available events on the given date Range
+  Future<List<CalendarEvent>?> getEventsByDateRange({
+    required String calendarId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    List<CalendarEvent>? events = [];
+    try {
+      String eventsJson =
+          await _channel.invokeMethod('getEventsByDateRange', <String, Object?>{
+        'calendarId': calendarId,
+        'startDate': startDate.millisecondsSinceEpoch,
+        'endDate': endDate.millisecondsSinceEpoch,
+      });
+      events =
+          json.decode(eventsJson).map<CalendarEvent>((decodedCalendarEvent) {
+        return CalendarEvent.fromJson(decodedCalendarEvent);
+      }).toList();
+    } catch (e) {
+      print(e);
+    }
+    return events;
+  }
+
+  /// Returns all the available events on the given date Range
+  Future<List<CalendarEvent>?> getEventsByMonth({
+    required String calendarId,
+    required DateTime findDate,
+  }) async {
+    DateTime startDate = findFirstDateOfTheMonth(findDate);
+    DateTime endDate = findLastDateOfTheMonth(findDate);
+
+    return getEventsByDateRange(
+        calendarId: calendarId, startDate: startDate, endDate: endDate);
+  }
+
+  /// Returns all the available events on the given date Range
+  Future<List<CalendarEvent>?> getEventsByWeek({
+    required String calendarId,
+    required DateTime findDate,
+  }) async {
+    DateTime startDate = findFirstDateOfTheWeek(findDate);
+    DateTime endDate = findLastDateOfTheWeek(findDate);
+
+    return getEventsByDateRange(
+        calendarId: calendarId, startDate: startDate, endDate: endDate);
+  }
+
   /// Helps to create an event in the selected calendar
-  Future<String?> createEvent(
-      {String? calendarId, required CalendarEvent event}) async {
+  Future<String?> createEvent({
+    required String calendarId,
+    required CalendarEvent event,
+  }) async {
     String? eventId;
 
     try {
       eventId = await _channel.invokeMethod(
         'createEvent',
         <String, Object?>{
-          "calendarId": calendarId,
+          'calendarId': calendarId,
           'eventId': event.eventId != null ? event.eventId : null,
           'title': event.title,
           'description': event.description,
@@ -91,8 +141,10 @@ class CalendarPlugin {
   }
 
   /// Helps to update the edited event
-  Future<String?> updateEvent(
-      {String? calendarId, required CalendarEvent event}) async {
+  Future<String?> updateEvent({
+    required String calendarId,
+    required CalendarEvent event,
+  }) async {
     String? eventId;
 
     try {
@@ -118,7 +170,10 @@ class CalendarPlugin {
   }
 
   /// Deletes the selected event in the selected calendar
-  Future<bool?> deleteEvent({String? calendarId, String? eventId}) async {
+  Future<bool?> deleteEvent({
+    required String calendarId,
+    required String eventId,
+  }) async {
     bool? isDeleted = false;
     try {
       isDeleted = await _channel.invokeMethod(
@@ -135,8 +190,11 @@ class CalendarPlugin {
   }
 
   /// Helps to add reminder in Android [add alarms in iOS]
-  Future<void> addReminder(
-      {String? calendarId, String? eventId, int? minutes}) async {
+  Future<void> addReminder({
+    required String calendarId,
+    required String eventId,
+    int? minutes,
+  }) async {
     try {
       await _channel.invokeMethod(
         'addReminder',
@@ -152,8 +210,11 @@ class CalendarPlugin {
   }
 
   /// Helps to update the selected reminder
-  Future<int?> updateReminder(
-      {String? calendarId, String? eventId, int? minutes}) async {
+  Future<int?> updateReminder({
+    required String calendarId,
+    required String eventId,
+    int? minutes,
+  }) async {
     int? updateCount = 0;
     try {
       updateCount = await _channel.invokeMethod(
@@ -171,7 +232,7 @@ class CalendarPlugin {
   }
 
   /// Helps to delete the selected event's reminder
-  Future<int?> deleteReminder({String? eventId}) async {
+  Future<int?> deleteReminder({required String eventId}) async {
     int? updateCount = 0;
     try {
       updateCount = await _channel.invokeMethod(
@@ -184,5 +245,31 @@ class CalendarPlugin {
       print(e);
     }
     return updateCount;
+  }
+
+  /// Find the first date of the month which contains the provided date.
+  DateTime findFirstDateOfTheMonth(DateTime dateTime) {
+    DateTime firstDayOfMonth = DateTime.utc(dateTime.year, dateTime.month, 1);
+    print('firstDayOfMonth - $firstDayOfMonth');
+    return firstDayOfMonth;
+  }
+
+  /// Find the last date of the month which contains the provided date.
+  DateTime findLastDateOfTheMonth(DateTime dateTime) {
+    DateTime lastDayOfMonth = DateTime.utc(dateTime.year, dateTime.month + 1, 1)
+        .subtract(Duration(hours: 1));
+    print('lastDayOfMonth - $lastDayOfMonth');
+    return lastDayOfMonth;
+  }
+
+  /// Find the first date of the week which contains the provided date.
+  DateTime findFirstDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 1));
+  }
+
+  /// Find last date of the week which contains provided date.
+  DateTime findLastDateOfTheWeek(DateTime dateTime) {
+    return dateTime
+        .add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 }

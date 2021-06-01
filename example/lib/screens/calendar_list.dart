@@ -27,7 +27,7 @@ class CalendarList extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return EventList(calendarId: calendar.id);
+                        return EventList(calendarId: calendar.id!);
                       },
                     ),
                   );
