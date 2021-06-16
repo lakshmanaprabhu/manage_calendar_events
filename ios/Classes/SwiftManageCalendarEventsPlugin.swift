@@ -26,6 +26,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let location: String?
         let isAllDay: Bool
         let hasAlarm: Bool
+        let url: String?
         var reminder: Reminder?
     }
 
@@ -70,6 +71,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             let location = arguments["location"] as? String
             let isAllDay = arguments["isAllDay"] as! Bool
             let hasAlarm = arguments["hasAlarm"] as! Bool
+            let url = arguments["url"] as? String
             let reminder = arguments["reminder"] as? Reminder
 
             var event = CalendarEvent(
@@ -81,6 +83,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 location: location,
                 isAllDay: isAllDay,
                 hasAlarm: hasAlarm,
+                url: url,
                 reminder: reminder
             )
             self.createUpdateEvent(calendarId: calendarId, event: &event)
@@ -152,7 +155,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
         return jsonString
     }
-    
+
     private func getAllEvents(calendarId: String) -> String? {
         if(!hasPermissions()) {
             requestPermissions()
@@ -161,10 +164,10 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let startDate = NSDate(timeIntervalSinceNow: -60 * 60 * 24 * 180)
         let endDate = NSDate(timeIntervalSinceNow: 60 * 60 * 24 * 180)
         let predicate = eventStore.predicateForEvents(withStart: startDate as Date, end: endDate as Date, calendars: [selectedCalendar!])
-        
+
         return getEvents(predicate: predicate)
     }
-    
+
     private func getEventsByDateRange(calendarId: String, startDate: Int64, endDate: Int64) -> String? {
         if(!hasPermissions()) {
             requestPermissions()
@@ -173,7 +176,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let startDate = Date (timeIntervalSince1970: Double(startDate) / 1000.0)
         let endDate = Date (timeIntervalSince1970: Double(endDate) / 1000.0)
         let predicate = eventStore.predicateForEvents(withStart: startDate as Date, end: endDate as Date, calendars: [selectedCalendar!])
-        
+
         return getEvents(predicate: predicate)
     }
 
@@ -198,6 +201,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 location: ekEvent.location,
                 isAllDay: ekEvent.isAllDay,
                 hasAlarm: ekEvent.hasAlarms,
+                url: ekEvent.url?.absoluteString,
                 reminder: reminder
             )
             events.append(event)
@@ -227,6 +231,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let reminder = event.reminder
         let location = event.location
         let isAllDay = event.isAllDay
+        let url = event.url
 
         let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
         //        if (!(ekCalendar!.allowsContentModifications)) {
@@ -254,6 +259,11 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             ekEvent!.location = location
         }
 
+        if(url != nil) {
+            ekEvent!.url = URL(string: url ?? "")
+        }
+        
+
         if(reminder != nil) {
             let alarm = EKAlarm.init(absoluteDate: Date.init(timeInterval: 1800, since: Date (timeIntervalSince1970: Double(event.startDate) / 1000.0)))
             ekEvent!.addAlarm(alarm)
@@ -268,15 +278,15 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
     }
 
     private func deleteEvent(calendarId: String, eventId: String) -> Bool {
-        //            let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
-
-        //            if (!(ekCalendar!.allowsContentModifications)) {
-        //                return
-        //            }
+        //        let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
+        //
+        //        if (!(ekCalendar!.allowsContentModifications)) {
+        //            return
+        //        }
         let ekEvent = self.eventStore.event(withIdentifier: eventId)
-        //            if (ekEvent == nil) {
-        //                return
-        //            }
+        //        if (ekEvent == nil) {
+        //            return
+        //        }
 
         do {
             try self.eventStore.remove(ekEvent!, span: .futureEvents)

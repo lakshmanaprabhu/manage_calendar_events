@@ -16,6 +16,8 @@ public final class CalendarEvent {
   private long endDate;
   @SerializedName("location")
   private String location;
+  @SerializedName("url")
+  private String url;
   @SerializedName("duration")
   private long duration;
   @SerializedName("isAllDay")
@@ -27,13 +29,14 @@ public final class CalendarEvent {
 
   public CalendarEvent(String eventId, String title, String description, long startDate,
       long endDate,
-      String location, boolean isAllDay, boolean hasAlarm) {
+      String location, String url, boolean isAllDay, boolean hasAlarm) {
     this.eventId = eventId;
     this.title = title;
     this.description = description;
     this.startDate = startDate;
     this.endDate = endDate;
     this.location = location;
+    this.url = url;
     this.isAllDay = isAllDay;
     this.hasAlarm = hasAlarm;
   }
@@ -84,6 +87,14 @@ public final class CalendarEvent {
 
   public void setLocation(String location) {
     this.location = location;
+  }
+
+  public String getUrl() {
+      return url;
+  }
+
+  public void setUrl(String url) {
+      this.url = url;
   }
 
   public long getDuration() {

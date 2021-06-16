@@ -30,6 +30,8 @@ class EventDetails extends StatelessWidget {
               SizedBox(height: 20),
               Text("Location: ${this.activeEvent.location}"),
               SizedBox(height: 20),
+              Text("URL: ${this.activeEvent.url}"),
+              SizedBox(height: 20),
               Text("All day event: ${this.activeEvent.isAllDay}"),
               SizedBox(height: 20),
               Text("Has Alarm: ${this.activeEvent.hasAlarm}"),

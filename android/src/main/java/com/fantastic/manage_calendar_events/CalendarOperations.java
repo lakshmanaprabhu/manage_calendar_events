@@ -106,8 +106,9 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
     public ArrayList<CalendarEvent> getEventsByDateRange(String calendarId, long startDate, long endDate) {
 //        Log.d("XXX", "StartDate is: "+startDate+" and EndDate is: "+endDate);
         String selection =
-                Events.CALENDAR_ID + " = " + calendarId + " AND " + Events.DELETED
-                        + " != 1 AND ((" + Events.DTSTART + " >= " + startDate + ") AND (" + Events.DTEND + " <= " + endDate + "))";
+                Events.CALENDAR_ID + " = " + calendarId + " AND "
+                + Events.DELETED + " != 1 AND ((" + Events.DTSTART +
+                " >= " + startDate + ") AND (" + Events.DTEND + " <= " + endDate + "))";
         return getEvents(selection);
     }
 
@@ -131,6 +132,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                         Events.TITLE,
                         Events.DESCRIPTION,
                         Events.EVENT_LOCATION,
+                        Events.CUSTOM_APP_URI,
                         Events.DTSTART,
                         Events.DTEND,
                         Events.ALL_DAY,
@@ -154,6 +156,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                 String desc = cur.getString(cur.getColumnIndex(Events.DESCRIPTION));
                 String location = cur
                         .getString(cur.getColumnIndex(Events.EVENT_LOCATION));
+                String url = cur.getString(cur.getColumnIndex(Events.CUSTOM_APP_URI));
                 long startDate =
                         cur.getLong(cur.getColumnIndex(Events.DTSTART));
                 long endDate = cur.getLong(cur.getColumnIndex(Events.DTEND));
@@ -162,8 +165,9 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                 boolean hasAlarm = cur.getInt(cur.getColumnIndex(Events.HAS_ALARM)) > 0;
                 CalendarEvent event = new CalendarEvent(eventId, title, desc, startDate, endDate,
                         location,
+                        url,
                         isAllDay, hasAlarm);
-//                Log.d("XXX", " " + event.toString());
+            //    Log.d("XXX", " " + event.toString());
                 calendarEvents.add(event);
             }
         } catch (Exception e) {
@@ -187,6 +191,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                         Events.TITLE,
                         Events.DESCRIPTION,
                         Events.EVENT_LOCATION,
+                        Events.CUSTOM_APP_URI,
                         Events.DTSTART,
                         Events.DTEND,
                         Events.ALL_DAY,
@@ -209,6 +214,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                 String desc = cur.getString(cur.getColumnIndex(Events.DESCRIPTION));
                 String location = cur
                         .getString(cur.getColumnIndex(Events.EVENT_LOCATION));
+                String url = cur.getString(cur.getColumnIndex(Events.CUSTOM_APP_URI));
                 long startDate =
                         cur.getLong(cur.getColumnIndex(Events.DTSTART));
                 long endDate = cur.getLong(cur.getColumnIndex(Events.DTEND));
@@ -217,6 +223,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                 boolean hasAlarm = cur.getInt(cur.getColumnIndex(Events.HAS_ALARM)) > 0;
                 event = new CalendarEvent(eventId, title, desc, startDate, endDate,
                         location,
+                        url,
                         isAllDay, hasAlarm);
                 Log.d("XXX", " " + event.toString());
             }
@@ -248,6 +255,9 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         values.put(Events.HAS_ALARM, event.isHasAlarm());
         if (event.getLocation() != null) {
             values.put(Events.EVENT_LOCATION, event.getLocation());
+        }
+        if(event.getUrl()!=null) {
+            values.put(Events.CUSTOM_APP_URI, event.getUrl());
         }
 
         try {

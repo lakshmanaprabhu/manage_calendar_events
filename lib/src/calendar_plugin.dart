@@ -131,6 +131,7 @@ class CalendarPlugin {
           'location': event.location,
           'isAllDay': event.isAllDay != null ? event.isAllDay : false,
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
+          'url': event.url,
           'reminder': event.reminder != null ? event.reminder!.minutes : null,
         },
       );
@@ -160,6 +161,7 @@ class CalendarPlugin {
           'location': event.location,
           'isAllDay': event.isAllDay != null ? event.isAllDay : false,
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
+          'url': event.url,
           'reminder': event.reminder != null ? event.reminder!.minutes : null,
         },
       );

@@ -10,36 +10,40 @@ class CalendarEvent {
   int? duration;
   bool? isAllDay;
   bool? hasAlarm;
+  String? url;
   Reminder? reminder;
 
-  CalendarEvent(
-      {this.eventId,
-      this.title = '',
-      this.description = '',
-      required this.startDate,
-      required this.endDate,
-      this.location,
-      this.duration,
-      this.isAllDay = false,
-      this.hasAlarm = false});
+  CalendarEvent({
+    this.eventId,
+    this.title = '',
+    this.description = '',
+    required this.startDate,
+    required this.endDate,
+    this.location,
+    this.duration,
+    this.isAllDay = false,
+    this.hasAlarm = false,
+    this.url,
+  });
 
   CalendarEvent.fromJson(Map<String, dynamic> data) {
-    this.eventId = data["eventId"];
-    this.title = data["title"];
-    this.description = data["description"];
-    var date = data["startDate"];
+    this.eventId = data['eventId'];
+    this.title = data['title'];
+    this.description = data['description'];
+    var date = data['startDate'];
     if (date != null) {
       this.startDate = DateTime.fromMillisecondsSinceEpoch(date);
     }
-    date = data["endDate"];
+    date = data['endDate'];
     if (date != null) {
       this.endDate = DateTime.fromMillisecondsSinceEpoch(date);
     }
-    this.location = data["location"];
-    this.isAllDay = data["isAllDay"];
-    this.hasAlarm = data["hasAlarm"];
-    if (data["reminder"] != null) {
-      this.reminder = Reminder.fromJson(data["reminder"]);
+    this.location = data['location'];
+    this.isAllDay = data['isAllDay'];
+    this.hasAlarm = data['hasAlarm'];
+    this.url = data['url'];
+    if (data['reminder'] != null) {
+      this.reminder = Reminder.fromJson(data['reminder']);
     }
   }
 
@@ -49,9 +53,9 @@ class CalendarEvent {
 }
 
 class Reminder {
-  final int? minutes;
+  final int minutes;
 
   Reminder({required this.minutes});
 
-  Reminder.fromJson(Map<String, dynamic> data) : this.minutes = data["minutes"];
+  Reminder.fromJson(Map<String, dynamic> data) : this.minutes = data['minutes'];
 }

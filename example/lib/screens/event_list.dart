@@ -139,6 +139,7 @@ class _EventListState extends State<EventList> {
       startDate: startDate,
       endDate: endDate,
       location: "Chennai, Tamilnadu",
+      url: 'https://www.google.com',
     );
     _myPlugin
         .createEvent(calendarId: widget.calendarId, event: _newEvent)
@@ -169,7 +170,7 @@ class _EventListState extends State<EventList> {
     if (event.hasAlarm!) {
       _updateReminder(event.eventId!, 65);
     } else {
-      _addReminder(event.eventId!, 40);
+      _addReminder(event.eventId!, -30);
     }
   }
 

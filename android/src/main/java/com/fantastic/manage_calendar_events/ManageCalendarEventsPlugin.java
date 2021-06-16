@@ -74,10 +74,11 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
             long startDate = call.argument("startDate");
             long endDate = call.argument("endDate");
             String location = call.argument("location");
+            String url = call.argument("url");
             boolean isAllDay = call.argument("isAllDay");
             boolean hasAlarm = call.argument("hasAlarm");
             CalendarEvent event = new CalendarEvent(eventId, title, description, startDate,
-                    endDate, location, isAllDay, hasAlarm);
+                    endDate, location, url, isAllDay, hasAlarm);
             operations.createUpdateEvent(calendarId, event);
             result.success(event.getEventId());
         } else if (call.method.equals("deleteEvent")) {
