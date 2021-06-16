@@ -1,3 +1,6 @@
+## 1.0.8
+* Add URL field on the Event (specially for iOS)
+
 ## 1.0.7
 * Implemented a way to filter the events by Week, Month and given dates
 
