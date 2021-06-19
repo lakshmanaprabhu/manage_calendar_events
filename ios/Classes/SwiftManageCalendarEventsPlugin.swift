@@ -28,10 +28,16 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let hasAlarm: Bool
         let url: String?
         var reminder: Reminder?
+        var attendees: [Attendee]?
     }
 
     struct Reminder: Codable {
         let minutes: Int64
+    }
+
+    struct Attendee: Codable {
+        let name: String?
+        let emailAddress: String
     }
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -187,11 +193,17 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         for ekEvent in ekEvents {
             //            NSLog("events.count inside for = %d",  events.count);
             //            NSLog("event = %@",  ekEvent);
+
             var reminder: Reminder?
             if(ekEvent.hasAlarms) {
-                NSLog("HasAlarms: ")
                 reminder = Reminder(minutes: self.secondsToMinutes(seconds: Int64(ekEvent.alarms![0].relativeOffset)))
             }
+
+            var attendees = [Attendee]()
+            if (ekEvent.hasAttendees) {
+                attendees = getAttendees(attendeesList: ekEvent.attendees!)
+            }
+
             let event = CalendarEvent(
                 eventId: ekEvent.eventIdentifier,
                 title: ekEvent.title,
@@ -202,11 +214,11 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 isAllDay: ekEvent.isAllDay,
                 hasAlarm: ekEvent.hasAlarms,
                 url: ekEvent.url?.absoluteString,
-                reminder: reminder
+                reminder: reminder,
+                attendees: attendees
             )
             events.append(event)
         }
-        NSLog("events.count = %d", events.count)
         let jsonEncoder = JSONEncoder()
         var jsonString = ""
         do {
@@ -262,7 +274,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         if(url != nil) {
             ekEvent!.url = URL(string: url ?? "")
         }
-        
+
 
         if(reminder != nil) {
             let alarm = EKAlarm.init(absoluteDate: Date.init(timeInterval: 1800, since: Date (timeIntervalSince1970: Double(event.startDate) / 1000.0)))
@@ -278,15 +290,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
     }
 
     private func deleteEvent(calendarId: String, eventId: String) -> Bool {
-        //        let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
-        //
-        //        if (!(ekCalendar!.allowsContentModifications)) {
-        //            return
-        //        }
         let ekEvent = self.eventStore.event(withIdentifier: eventId)
-        //        if (ekEvent == nil) {
-        //            return
-        //        }
 
         do {
             try self.eventStore.remove(ekEvent!, span: .futureEvents)
@@ -295,6 +299,19 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             self.eventStore.reset()
             return false
         }
+    }
+
+    private func getAttendees(attendeesList: [EKParticipant?]) -> [Attendee] {
+        var attendees = [Attendee]()
+        for attendeeElement in attendeesList {
+            if attendeeElement == nil {
+                continue
+            }
+
+            let attendee = Attendee(name: attendeeElement!.name, emailAddress: attendeeElement!.emailAddress!)
+            attendees.append(attendee)
+        }
+        return attendees
     }
 
     private func addReminder(eventId: String, reminder: Reminder) {
@@ -336,4 +353,11 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         return true
     }
 }
+
+extension EKParticipant {
+    var emailAddress: String? {
+        return self.value(forKey: "emailAddress") as? String
+    }
+}
+
 

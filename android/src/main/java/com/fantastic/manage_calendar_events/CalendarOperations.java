@@ -17,11 +17,27 @@ import com.fantastic.manage_calendar_events.models.CalendarEvent;
 import com.fantastic.manage_calendar_events.models.CalendarEvent.Reminder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CalendarOperations { // implements PluginRegistry.RequestPermissionsResultListener {
 
     private static final int MY_CAL_REQ = 101;
     private static final int MY_CAL_WRITE_REQ = 102;
+
+    private static final String[] EVENT_PROJECTION =
+            {
+                    CalendarContract.Instances._ID,
+                    Events.TITLE,
+                    Events.DESCRIPTION,
+                    Events.EVENT_LOCATION,
+                    Events.CUSTOM_APP_URI,
+                    Events.DTSTART,
+                    Events.DTEND,
+                    Events.ALL_DAY,
+                    Events.DURATION,
+                    Events.HAS_ALARM,
+
+            };
 
     private Activity activity;
 
@@ -47,13 +63,13 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
 
     void requestPermissions() {
         if (23 <= android.os.Build.VERSION.SDK_INT) {
-            String[] permissions = new String[]{permission.WRITE_CALENDAR, permission.READ_CALENDAR};
+            String[] permissions = new String[]{permission.WRITE_CALENDAR,
+                    permission.READ_CALENDAR};
             activity.requestPermissions(permissions, MY_CAL_REQ);
         }
     }
 
     public ArrayList<Calendar> getCalendars() {
-        Cursor cur = null;
         ContentResolver cr = activity.getContentResolver();
         ArrayList<Calendar> calendarList = new ArrayList<>();
 
@@ -71,21 +87,18 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         if (!hasPermissions()) {
             requestPermissions();
         }
-        cur = cr.query(uri, mProjection, null, null, null);
+        Cursor cur = cr.query(uri, mProjection, null, null, null);
 
         try {
             while (cur.moveToNext()) {
                 String calenderId = cur.getLong(cur.getColumnIndex(Calendars._ID)) + "";
-//                Log.d("XXX", "calenderId: "+calenderId);
                 String displayName = cur
                         .getString(cur.getColumnIndex(Calendars.CALENDAR_DISPLAY_NAME));
-//                Log.d("XXX", "Display Name: "+displayName);
                 String accountName = cur
                         .getString(cur.getColumnIndex(Calendars.ACCOUNT_NAME));
                 String ownerName = cur
                         .getString(cur.getColumnIndex(Calendars.OWNER_ACCOUNT));
                 Calendar calendar = new Calendar(calenderId, displayName, accountName, ownerName);
-//                Log.d("XXX", calendar.toString());
                 calendarList.add(calendar);
             }
         } catch (Exception e) {
@@ -93,7 +106,6 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         } finally {
             cur.close();
         }
-        Log.d("XXX", calendarList.toString());
         return calendarList;
     }
 
@@ -103,12 +115,12 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         return getEvents(selection);
     }
 
-    public ArrayList<CalendarEvent> getEventsByDateRange(String calendarId, long startDate, long endDate) {
-//        Log.d("XXX", "StartDate is: "+startDate+" and EndDate is: "+endDate);
+    public ArrayList<CalendarEvent> getEventsByDateRange(String calendarId, long startDate,
+                                                         long endDate) {
         String selection =
                 Events.CALENDAR_ID + " = " + calendarId + " AND "
-                + Events.DELETED + " != 1 AND ((" + Events.DTSTART +
-                " >= " + startDate + ") AND (" + Events.DTEND + " <= " + endDate + "))";
+                        + Events.DELETED + " != 1 AND ((" + Events.DTSTART +
+                        " >= " + startDate + ") AND (" + Events.DTEND + " <= " + endDate + "))";
         return getEvents(selection);
     }
 
@@ -126,32 +138,18 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
 
         ArrayList<CalendarEvent> calendarEvents = new ArrayList<>();
 
-        String[] mProjection =
-                {
-                        CalendarContract.Instances._ID,
-                        Events.TITLE,
-                        Events.DESCRIPTION,
-                        Events.EVENT_LOCATION,
-                        Events.CUSTOM_APP_URI,
-                        Events.DTSTART,
-                        Events.DTEND,
-                        Events.ALL_DAY,
-                        Events.DURATION,
-                        Events.HAS_ALARM,
-
-                };
-
         Uri uri = Events.CONTENT_URI;
-//        String selection =
-//                Events.CALENDAR_ID + " = " + calendarId + " AND " + Events.DELETED + " != 1";
+        // String selection =
+        //        Events.CALENDAR_ID + " = " + calendarId + " AND " + Events.DELETED + " != 1";
         // String[] selectionArgs = new String[]{"Chennai, Tamilnadu"};
         String eventsSortOrder = Events.DTSTART + " ASC";
 
-        Cursor cur = cr.query(uri, mProjection, selection, null, eventsSortOrder);
+        Cursor cur = cr.query(uri, EVENT_PROJECTION, selection, null, eventsSortOrder);
 
         try {
             while (cur.moveToNext()) {
-                String eventId = cur.getLong(cur.getColumnIndex(CalendarContract.Instances._ID)) + "";
+                String eventId =
+                        cur.getLong(cur.getColumnIndex(CalendarContract.Instances._ID)) + "";
                 String title = cur.getString(cur.getColumnIndex(Events.TITLE));
                 String desc = cur.getString(cur.getColumnIndex(Events.DESCRIPTION));
                 String location = cur
@@ -167,7 +165,6 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                         location,
                         url,
                         isAllDay, hasAlarm);
-            //    Log.d("XXX", " " + event.toString());
                 calendarEvents.add(event);
             }
         } catch (Exception e) {
@@ -176,7 +173,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
             cur.close();
         }
 
-        updateEventWithReminders(calendarEvents);
+        updateRemindersAndAttendees(calendarEvents);
         return calendarEvents;
     }
 
@@ -184,55 +181,13 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         if (!hasPermissions()) {
             requestPermissions();
         }
-        ContentResolver cr = activity.getContentResolver();
-        String[] mProjection =
-                {
-                        CalendarContract.Instances._ID,
-                        Events.TITLE,
-                        Events.DESCRIPTION,
-                        Events.EVENT_LOCATION,
-                        Events.CUSTOM_APP_URI,
-                        Events.DTSTART,
-                        Events.DTEND,
-                        Events.ALL_DAY,
-                        Events.DURATION,
-                        Events.HAS_ALARM,
-
-                };
-        Uri uri = Events.CONTENT_URI;
         String selection =
                 Events.CALENDAR_ID + " = " + calendarId + " AND " + CalendarContract.Instances._ID
                         + " = " + eventId;
 
-        Cursor cur = cr.query(uri, mProjection, selection, null, null);
-        CalendarEvent event = null;
-
-        try {
-            while (cur.moveToNext()) {
-                eventId = cur.getLong(cur.getColumnIndex(CalendarContract.Instances._ID)) + "";
-                String title = cur.getString(cur.getColumnIndex(Events.TITLE));
-                String desc = cur.getString(cur.getColumnIndex(Events.DESCRIPTION));
-                String location = cur
-                        .getString(cur.getColumnIndex(Events.EVENT_LOCATION));
-                String url = cur.getString(cur.getColumnIndex(Events.CUSTOM_APP_URI));
-                long startDate =
-                        cur.getLong(cur.getColumnIndex(Events.DTSTART));
-                long endDate = cur.getLong(cur.getColumnIndex(Events.DTEND));
-                long duration = cur.getLong(cur.getColumnIndex(Events.DURATION));
-                boolean isAllDay = cur.getInt(cur.getColumnIndex(Events.ALL_DAY)) > 0;
-                boolean hasAlarm = cur.getInt(cur.getColumnIndex(Events.HAS_ALARM)) > 0;
-                event = new CalendarEvent(eventId, title, desc, startDate, endDate,
-                        location,
-                        url,
-                        isAllDay, hasAlarm);
-                Log.d("XXX", " " + event.toString());
-            }
-        } catch (Exception e) {
-            Log.e("XXX", e.getMessage());
-        } finally {
-            cur.close();
-        }
-        return event;
+        ArrayList<CalendarEvent> events = getEvents(selection);
+        assert (events.size() == 1);
+        return events.get(0);
     }
 
     public void createUpdateEvent(String calendarId, CalendarEvent event) {
@@ -256,7 +211,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         if (event.getLocation() != null) {
             values.put(Events.EVENT_LOCATION, event.getLocation());
         }
-        if(event.getUrl()!=null) {
+        if (event.getUrl() != null) {
             values.put(Events.CUSTOM_APP_URI, event.getUrl());
         }
 
@@ -288,23 +243,69 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                         + " = " + eventId;
 
         int updCount = activity.getContentResolver().delete(uri, selection, null);
-        // Log.d("XXX", "updCount is " + updCount);
         return updCount;
     }
 
-    public void updateEventWithReminders(ArrayList<CalendarEvent> events) {
+    private void updateRemindersAndAttendees(ArrayList<CalendarEvent> events) {
         for (CalendarEvent event : events) {
             getReminders(event);
+            getAttendees(event);
         }
     }
 
+    private void getAttendees(CalendarEvent event) {
+        String eventId = event.getEventId();
+        ContentResolver cr = activity.getContentResolver();
+
+        String[] mProjection =
+                {
+                        CalendarContract.Attendees.EVENT_ID,
+                        CalendarContract.Attendees._ID,
+                        CalendarContract.Attendees.ATTENDEE_NAME,
+                        CalendarContract.Attendees.ATTENDEE_EMAIL,
+                        CalendarContract.Attendees.ATTENDEE_RELATIONSHIP,
+                        CalendarContract.Attendees.IS_ORGANIZER,
+                };
+
+        Uri uri = CalendarContract.Attendees.CONTENT_URI;
+        String selection = CalendarContract.Attendees.EVENT_ID + " = " + eventId;
+
+        Cursor cur = cr.query(uri, mProjection, selection, null, null);
+
+        List<CalendarEvent.Attendee> attendees = new ArrayList<>();
+
+        try {
+            while (cur.moveToNext()) {
+                String attendeeId =
+                        cur.getLong(cur.getColumnIndex(CalendarContract.Attendees._ID)) + "";
+                String name =
+                        cur.getString(cur.getColumnIndex(CalendarContract.Attendees.ATTENDEE_NAME));
+                String emailAddress =
+                        cur.getString(cur.getColumnIndex(CalendarContract.Attendees.ATTENDEE_EMAIL));
+                int relationship = cur
+                        .getInt(cur.getColumnIndex(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP));
+
+                boolean isOrganiser =
+                        relationship == CalendarContract.Attendees.RELATIONSHIP_ORGANIZER;
+                CalendarEvent.Attendee attendee = new CalendarEvent.Attendee(attendeeId, name,
+                        emailAddress, isOrganiser);
+
+                attendees.add(attendee);
+            }
+        } catch (Exception e) {
+            Log.e("XXX", e.getMessage());
+        } finally {
+            cur.close();
+        }
+        event.setAttendees(attendees);
+    }
+
+
     private void getReminders(CalendarEvent event) {
         String eventId = event.getEventId();
-        // Log.d("XXX", "Event id is: " + eventId);
         if (!hasPermissions()) {
             requestPermissions();
         }
-        Cursor cur = null;
         ContentResolver cr = activity.getContentResolver();
 
         String[] mProjection =
@@ -318,13 +319,12 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         String selection = CalendarContract.Reminders.EVENT_ID + " = " + eventId;
 //        String[] selectionArgs = new String[]{"2"};
 
-        cur = cr.query(uri, mProjection, selection, null, null);
+        Cursor cur = cr.query(uri, mProjection, selection, null, null);
 
         try {
             while (cur.moveToNext()) {
                 long minutes = cur.getLong(cur.getColumnIndex(CalendarContract.Reminders.MINUTES));
                 Reminder reminder = new CalendarEvent.Reminder(minutes);
-                // Log.d("XXX", "" + reminder.toString());
                 event.setReminder(reminder);
             }
         } catch (Exception e) {

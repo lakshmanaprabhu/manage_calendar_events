@@ -37,10 +37,29 @@ class EventDetails extends StatelessWidget {
               Text("Has Alarm: ${this.activeEvent.hasAlarm}"),
               SizedBox(height: 20),
               Text("Reminder: ${this.activeEvent.reminder?.minutes}"),
+              ...attendeeList(),
             ],
           ),
         ),
       ),
     );
+  }
+
+  attendeeList() {
+    List<Widget> attendeeWidgets = [];
+    if (this.activeEvent.attendees != null) {
+      List<Attendee> attendees = this.activeEvent.attendees!.attendees;
+      attendeeWidgets.add(SizedBox(height: 20));
+      attendeeWidgets.add(Text("Attendees: ${attendees.length}"));
+
+      attendees.forEach((attendee) {
+        attendeeWidgets.add(ListTile(
+          title: Text(attendee.name),
+          subtitle: Text(attendee.emailAddress),
+          trailing: Text(attendee.isOrganiser ? 'Organiser' : ''),
+        ));
+      });
+    }
+    return attendeeWidgets;
   }
 }

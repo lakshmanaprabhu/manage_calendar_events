@@ -1,3 +1,5 @@
+## 1.0.9
+* Add Attendee field [Read-only] support in iOS and Android
 ## 1.0.8
 * Add URL field on the Event (specially for iOS)
 

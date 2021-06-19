@@ -2,6 +2,8 @@ package com.fantastic.manage_calendar_events.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public final class CalendarEvent {
 
   @SerializedName("eventId")
@@ -26,6 +28,9 @@ public final class CalendarEvent {
   private boolean hasAlarm;
   @SerializedName("reminder")
   private Reminder reminder;
+
+  @SerializedName("attendees")
+  private List<Attendee> attendees;
 
   public CalendarEvent(String eventId, String title, String description, long startDate,
       long endDate,
@@ -129,6 +134,10 @@ public final class CalendarEvent {
     this.reminder = reminder;
   }
 
+  public void setAttendees(List<Attendee> attendees) {
+    this.attendees = attendees;
+  }
+
   @Override
   public String toString() {
     return eventId + "-" + title + "-" + description + "-" + startDate + "-" + endDate + "-"
@@ -139,6 +148,7 @@ public final class CalendarEvent {
 
   public static class Reminder {
 
+    @SerializedName("minutes")
     private final long minutes;
 
     public Reminder(long minutes) {
@@ -155,4 +165,50 @@ public final class CalendarEvent {
     }
   }
 
+  final public static class Attendee {
+    @SerializedName("id")
+    private final String id;
+
+    @SerializedName("name")
+    private final String name;
+
+    @SerializedName("emailAddress")
+    private final String emailAddress;
+
+    @SerializedName("isOrganiser")
+    private final boolean isOrganiser;
+
+    public Attendee(String id, String name, String emailAddress, boolean isOrganiser) {
+      this.id = id;
+      this.name = name;
+      this.emailAddress = emailAddress;
+      this.isOrganiser = isOrganiser;
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getEmailAddress() {
+      return emailAddress;
+    }
+
+    public boolean isOrganiser() {
+      return isOrganiser;
+    }
+
+    @Override
+    public String toString() {
+      return "Attendee{" +
+              "id='" + id + '\'' +
+              ", name='" + name + '\'' +
+              ", emailAddress='" + emailAddress + '\'' +
+              ", isOrganiser=" + isOrganiser +
+              '}';
+    }
+  }
 }

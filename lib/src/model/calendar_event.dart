@@ -12,6 +12,7 @@ class CalendarEvent {
   bool? hasAlarm;
   String? url;
   Reminder? reminder;
+  Attendees? attendees;
 
   CalendarEvent({
     this.eventId,
@@ -45,6 +46,9 @@ class CalendarEvent {
     if (data['reminder'] != null) {
       this.reminder = Reminder.fromJson(data['reminder']);
     }
+    if (data['attendees'] != null && (data['attendees'] as List).isNotEmpty) {
+      this.attendees = Attendees.fromJson(data['attendees']);
+    }
   }
 
   setReminder(Reminder reminder) {
@@ -58,4 +62,43 @@ class Reminder {
   Reminder({required this.minutes});
 
   Reminder.fromJson(Map<String, dynamic> data) : this.minutes = data['minutes'];
+}
+
+class Attendees {
+  final List<Attendee> attendees;
+
+  bool get hasAttendees => attendees.isNotEmpty;
+
+  Attendees({required this.attendees});
+
+  static fromJson(List<dynamic> data) {
+    List<Attendee> attendees = List.empty(growable: true);
+    data.forEach((element) {
+      Attendee attendee = Attendee.fromJson(element);
+      attendees.add(attendee);
+    });
+    return Attendees(attendees: attendees);
+  }
+}
+
+class Attendee {
+  final String name;
+  final String emailAddress;
+  final bool isOrganiser;
+
+  Attendee({
+    required this.name,
+    required this.emailAddress,
+    this.isOrganiser = false,
+  });
+
+  Attendee.fromJson(Map<String, dynamic> data)
+      : this.name = data['name'],
+        this.emailAddress = data['emailAddress'],
+        this.isOrganiser = data['isOrganiser'] ?? false;
+
+  @override
+  String toString() {
+    return 'Name is: $name - Email Address is $emailAddress - isOrganiser: $isOrganiser';
+  }
 }
