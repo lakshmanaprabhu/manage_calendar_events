@@ -8,6 +8,8 @@ import com.fantastic.manage_calendar_events.models.CalendarEvent;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -65,7 +67,8 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
             String calendarId = call.argument("calendarId");
             long startDate = call.argument("startDate");
             long endDate = call.argument("endDate");
-            result.success(gson.toJson(operations.getEventsByDateRange(calendarId, startDate, endDate)));
+            result.success(gson.toJson(operations.getEventsByDateRange(calendarId, startDate,
+                    endDate)));
         } else if (call.method.equals("createEvent") || call.method.equals("updateEvent")) {
             String calendarId = call.argument("calendarId");
             String eventId = call.argument("eventId");
@@ -80,6 +83,9 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
             CalendarEvent event = new CalendarEvent(eventId, title, description, startDate,
                     endDate, location, url, isAllDay, hasAlarm);
             operations.createUpdateEvent(calendarId, event);
+            if (call.hasArgument("attendees")) {
+                addAttendees(event.getEventId(), call);
+            }
             result.success(event.getEventId());
         } else if (call.method.equals("deleteEvent")) {
             String calendarId = call.argument("calendarId");
@@ -98,9 +104,37 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
         } else if (call.method.equals("deleteReminder")) {
             String eventId = call.argument("eventId");
             result.success(operations.deleteReminder(eventId));
+        } else if (call.method.equals("getAttendees")) {
+            String eventId = call.argument("eventId");
+            result.success(gson.toJson(operations.getAttendees(eventId)));
+        } else if (call.method.equals("addAttendees")) {
+            String eventId = call.argument("eventId");
+            addAttendees(eventId, call);
+        } else if (call.method.equals("deleteAttendee")) {
+            String eventId = call.argument("eventId");
+            Map<String, Object> attendeeMap = call.argument("attendee");
+            String name = (String) attendeeMap.get("name");
+            String emailAddress = (String) attendeeMap.get("emailAddress");
+            boolean isOrganiser = attendeeMap.get("isOrganiser") != null ?
+                    (boolean) attendeeMap.get("isOrganiser") : false;
+            CalendarEvent.Attendee attendee = new CalendarEvent.Attendee(name, emailAddress,
+                    isOrganiser);
+            result.success(operations.deleteAttendee(eventId, attendee));
         } else {
             result.notImplemented();
         }
+    }
+
+    private void addAttendees(String eventId, MethodCall call) {
+        List<CalendarEvent.Attendee> attendees = new ArrayList<>();
+        List<Map<String, Object>> jsonList = call.argument("attendees");
+        for (Map<String, Object> map : jsonList) {
+            String name = (String) map.get("name");
+            String emailAddress = (String) map.get("emailAddress");
+            boolean isOrganiser = (boolean) map.get("isOrganiser");
+            attendees.add(new CalendarEvent.Attendee(name, emailAddress, isOrganiser));
+        }
+        operations.addAttendees(eventId, attendees);
     }
 
 }

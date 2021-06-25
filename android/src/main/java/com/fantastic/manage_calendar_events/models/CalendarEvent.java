@@ -1,8 +1,13 @@
 package com.fantastic.manage_calendar_events.models;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class CalendarEvent {
 
@@ -178,6 +183,9 @@ public final class CalendarEvent {
     @SerializedName("isOrganiser")
     private final boolean isOrganiser;
 
+    public Attendee(String name, String emailAddress, boolean isOrganiser) {
+      this(null, name, emailAddress, isOrganiser);
+    }
     public Attendee(String id, String name, String emailAddress, boolean isOrganiser) {
       this.id = id;
       this.name = name;
@@ -199,6 +207,22 @@ public final class CalendarEvent {
 
     public boolean isOrganiser() {
       return isOrganiser;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Attendee attendee = (Attendee) o;
+      return isOrganiser == attendee.isOrganiser &&
+              name.equals(attendee.name) &&
+              emailAddress.equals(attendee.emailAddress);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public int hashCode() {
+      return Objects.hash(name, emailAddress, isOrganiser);
     }
 
     @Override

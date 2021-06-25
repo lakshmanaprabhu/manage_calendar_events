@@ -1,3 +1,5 @@
+## 2.0.0
+* Add Attendee field support on the Event both iOS and Android
 ## 1.0.9
 * Add Attendee field [Read-only] support in iOS and Android
 ## 1.0.8

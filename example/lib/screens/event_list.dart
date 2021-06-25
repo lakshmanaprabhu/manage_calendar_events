@@ -20,13 +20,13 @@ class _EventListState extends State<EventList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Events List"),
+        title: Text('Events List'),
       ),
       body: FutureBuilder<List<CalendarEvent>?>(
         future: _fetchEvents(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: Text("No Events found"));
+            return Center(child: Text('No Events found'));
           }
           List<CalendarEvent> events = snapshot.data!;
           return ListView.builder(
@@ -37,14 +37,12 @@ class _EventListState extends State<EventList> {
                 key: Key(event.eventId!),
                 confirmDismiss: (direction) async {
                   if (DismissDirection.startToEnd == direction) {
-                    print("startToEnd");
                     setState(() {
                       _deleteEvent(event.eventId!);
                     });
 
                     return true;
                   } else {
-                    print("endToStart");
                     setState(() {
                       _updateEvent(event);
                     });
@@ -75,7 +73,7 @@ class _EventListState extends State<EventList> {
                 ),
                 child: ListTile(
                   title: Text(event.title!),
-                  subtitle: Text(DateFormat("yyyy-MM-dd hh:mm:ss")
+                  subtitle: Text(DateFormat('yyyy-MM-dd hh:mm:ss')
                       .format(event.startDate!)),
                   onTap: () {
                     Navigator.push(
@@ -84,6 +82,7 @@ class _EventListState extends State<EventList> {
                         builder: (context) {
                           return EventDetails(
                             activeEvent: event,
+                            calendarPlugin: _myPlugin,
                           );
                         },
                       ),
@@ -134,18 +133,24 @@ class _EventListState extends State<EventList> {
     DateTime startDate = DateTime.now();
     DateTime endDate = startDate.add(Duration(hours: 3));
     CalendarEvent _newEvent = CalendarEvent(
-      title: "Event from plugin",
-      description: "test plugin description",
+      title: 'Event from plugin',
+      description: 'test plugin description',
       startDate: startDate,
       endDate: endDate,
-      location: "Chennai, Tamilnadu",
+      location: 'Chennai, Tamilnadu',
       url: 'https://www.google.com',
+      attendees: Attendees(
+        attendees: [
+          Attendee(emailAddress: 'test1@gmail.com', name: 'Test1'),
+          Attendee(emailAddress: 'test2@gmail.com', name: 'Test2'),
+        ],
+      ),
     );
     _myPlugin
         .createEvent(calendarId: widget.calendarId, event: _newEvent)
         .then((evenId) {
       setState(() {
-        print("Event Id is: $evenId");
+        debugPrint('Event Id is: $evenId');
       });
     });
   }
@@ -154,17 +159,22 @@ class _EventListState extends State<EventList> {
     _myPlugin
         .deleteEvent(calendarId: widget.calendarId, eventId: eventId)
         .then((isDeleted) {
-      print("Is Event deleted: $isDeleted");
+      debugPrint('Is Event deleted: $isDeleted');
     });
   }
 
   void _updateEvent(CalendarEvent event) async {
-    event.title = "Updated from Event";
-    event.description = "Test description is updated now";
+    event.title = 'Updated from Event';
+    event.description = 'Test description is updated now';
+    event.attendees = Attendees(
+      attendees: [
+        Attendee(emailAddress: 'updatetest@gmail.com', name: 'Update Test'),
+      ],
+    );
     _myPlugin
         .updateEvent(calendarId: widget.calendarId, event: event)
         .then((eventId) {
-      print("${event.eventId} is updated to $eventId");
+      debugPrint('${event.eventId} is updated to $eventId');
     });
 
     if (event.hasAlarm!) {
@@ -184,7 +194,7 @@ class _EventListState extends State<EventList> {
         calendarId: widget.calendarId, eventId: eventId, minutes: minutes);
   }
 
-  void _deleteReminder(String eventId) {
+  void _deleteReminder(String eventId) async {
     _myPlugin.deleteReminder(eventId: eventId);
   }
 }

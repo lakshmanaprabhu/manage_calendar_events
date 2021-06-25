@@ -17,7 +17,11 @@ import com.fantastic.manage_calendar_events.models.CalendarEvent;
 import com.fantastic.manage_calendar_events.models.CalendarEvent.Reminder;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CalendarOperations { // implements PluginRegistry.RequestPermissionsResultListener {
 
@@ -233,7 +237,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         }
     }
 
-    public int deleteEvent(String calendarId, String eventId) {
+    public boolean deleteEvent(String calendarId, String eventId) {
         if (!hasPermissions()) {
             requestPermissions();
         }
@@ -243,18 +247,20 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                         + " = " + eventId;
 
         int updCount = activity.getContentResolver().delete(uri, selection, null);
-        return updCount;
+        return updCount != 0;
     }
 
     private void updateRemindersAndAttendees(ArrayList<CalendarEvent> events) {
         for (CalendarEvent event : events) {
             getReminders(event);
-            getAttendees(event);
+            event.setAttendees(getAttendees(event.getEventId()));
         }
     }
 
-    private void getAttendees(CalendarEvent event) {
-        String eventId = event.getEventId();
+    public List<CalendarEvent.Attendee> getAttendees(String eventId) {
+        if (!hasPermissions()) {
+            requestPermissions();
+        }
         ContentResolver cr = activity.getContentResolver();
 
         String[] mProjection =
@@ -271,9 +277,11 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         String selection = CalendarContract.Attendees.EVENT_ID + " = " + eventId;
 
         Cursor cur = cr.query(uri, mProjection, selection, null, null);
+        int cursorSize = cur.getCount();
 
-        List<CalendarEvent.Attendee> attendees = new ArrayList<>();
+        Set<CalendarEvent.Attendee> attendees = new HashSet<>();
 
+        CalendarEvent.Attendee organiser = null;
         try {
             while (cur.moveToNext()) {
                 String attendeeId =
@@ -287,19 +295,99 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
 
                 boolean isOrganiser =
                         relationship == CalendarContract.Attendees.RELATIONSHIP_ORGANIZER;
+
+                if (name.isEmpty() && !emailAddress.isEmpty()) {
+                    name = capitalize(emailAddress.replaceAll("((@.*)|[^a-zA-Z])+", " ").trim());
+                }
                 CalendarEvent.Attendee attendee = new CalendarEvent.Attendee(attendeeId, name,
                         emailAddress, isOrganiser);
 
-                attendees.add(attendee);
+                if (isOrganiser) {
+                    organiser = attendee;
+                } else {
+                    attendees.add(attendee);
+                }
             }
         } catch (Exception e) {
             Log.e("XXX", e.getMessage());
         } finally {
             cur.close();
         }
-        event.setAttendees(attendees);
+        ArrayList attendeeList = new ArrayList<>(attendees);
+        Collections.sort(attendeeList, new Comparator<CalendarEvent.Attendee>() {
+            @Override
+            public int compare(CalendarEvent.Attendee o1, CalendarEvent.Attendee o2) {
+                return o1.getEmailAddress().compareTo(o2.getEmailAddress());
+            }
+        });
+        if (organiser != null && !attendeeList.isEmpty())
+            attendeeList.add(0, organiser);
+
+        if (cursorSize != attendeeList.size()) {
+            deleteAllAttendees(eventId);
+            addAttendees(eventId, attendeeList);
+        }
+        return attendeeList;
     }
 
+    private String capitalize(final String line) {
+        return Character.toUpperCase(line.charAt(0)) + line.substring(1);
+    }
+
+    public void addAttendees(String eventId,
+                             List<CalendarEvent.Attendee> attendees) {
+        if (!hasPermissions()) {
+            requestPermissions();
+        }
+        if (attendees.isEmpty()) {
+            return;
+        }
+
+        ContentResolver cr = activity.getContentResolver();
+        ContentValues[] valuesArray = new ContentValues[attendees.size()];
+
+        for (int i = 0, attendeesSize = attendees.size(); i < attendeesSize; i++) {
+            CalendarEvent.Attendee attendee = attendees.get(i);
+            ContentValues values = new ContentValues();
+            values.put(CalendarContract.Attendees.EVENT_ID, eventId);
+            values.put(CalendarContract.Attendees.ATTENDEE_NAME, attendee.getName());
+            values.put(CalendarContract.Attendees.ATTENDEE_EMAIL, attendee.getEmailAddress());
+            values.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP,
+                    attendee.isOrganiser() ? CalendarContract.Attendees.RELATIONSHIP_ORGANIZER :
+                            CalendarContract.Attendees.RELATIONSHIP_ATTENDEE);
+
+            valuesArray[i] = values;
+        }
+        cr.bulkInsert(CalendarContract.Attendees.CONTENT_URI, valuesArray);
+    }
+
+    public int deleteAttendee(String eventId,
+                              CalendarEvent.Attendee attendee) {
+        if (!hasPermissions()) {
+            requestPermissions();
+        }
+
+        Uri uri = CalendarContract.Attendees.CONTENT_URI;
+        String selection =
+                CalendarContract.Attendees.EVENT_ID + " = " + eventId
+                        + " AND " + CalendarContract.Attendees.ATTENDEE_EMAIL
+                        + " = '" + attendee.getEmailAddress() + "'";
+
+        int updCount = activity.getContentResolver().delete(uri, selection, null);
+        return updCount;
+    }
+
+    private int deleteAllAttendees(String eventId) {
+        if (!hasPermissions()) {
+            requestPermissions();
+        }
+
+        Uri uri = CalendarContract.Attendees.CONTENT_URI;
+        String selection = CalendarContract.Attendees.EVENT_ID + " = " + eventId;
+
+        int updCount = activity.getContentResolver().delete(uri, selection, null);
+        return updCount;
+    }
 
     private void getReminders(CalendarEvent event) {
         String eventId = event.getEventId();

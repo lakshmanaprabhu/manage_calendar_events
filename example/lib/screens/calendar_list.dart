@@ -49,7 +49,7 @@ class CalendarList extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  "Calendars List",
+                  'Calendars List',
                   style: Theme.of(context).textTheme.headline6,
                 ),
               ),
@@ -63,7 +63,6 @@ class CalendarList extends StatelessWidget {
 
   Future<List<Calendar>?> _fetchCalendars() async {
     _myPlugin.hasPermissions().then((value) {
-      debugPrint("hasPersmissions: $value");
       if (!value!) {
         _myPlugin.requestPermissions();
       }

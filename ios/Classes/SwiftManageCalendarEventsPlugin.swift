@@ -28,7 +28,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let hasAlarm: Bool
         let url: String?
         var reminder: Reminder?
-        var attendees: [Attendee]?
+        let attendees: [Attendee]?
     }
 
     struct Reminder: Codable {
@@ -38,6 +38,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
     struct Attendee: Codable {
         let name: String?
         let emailAddress: String
+        let isOrganiser: Bool
     }
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -90,9 +91,13 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 isAllDay: isAllDay,
                 hasAlarm: hasAlarm,
                 url: url,
-                reminder: reminder
+                reminder: reminder,
+                attendees: []
             )
             self.createUpdateEvent(calendarId: calendarId, event: &event)
+            if arguments["attendees"] as? NSObject != NSNull() {
+                self.addAttendees(eventId: event.eventId!, arguments: arguments)
+            }
             result(event.eventId)
         } else if (call.method == "deleteEvent") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
@@ -113,9 +118,36 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
             let eventId = arguments["eventId"] as? String
             result(self.deleteReminder(eventId: eventId!))
-            //    } else {
-            //        result.notImplemented();
+        } else if(call.method == "getAttendees") {
+            let arguments = call.arguments as! Dictionary<String, AnyObject>
+            let eventId = arguments["eventId"] as? String
+
+            let attendees = self.getAttendees(eventId: eventId!)
+
+            let jsonEncoder = JSONEncoder()
+            var attendeesJson = ""
+            do {
+                let jsonData = try jsonEncoder.encode(attendees)
+                attendeesJson = (String(data: jsonData, encoding: .utf8))!
+            } catch {
+                debugPrint("fetching attendees failed.. ")
+            }
+
+            result(attendeesJson)
+        } else if(call.method == "addAttendees") {
+            let arguments = call.arguments as! Dictionary<String, AnyObject>
+            let eventId = arguments["eventId"] as! String
+
+            self.addAttendees(eventId: eventId, arguments: arguments)
+        } else if(call.method == "deleteAttendee") {
+            let arguments = call.arguments as! Dictionary<String, AnyObject>
+            let eventId = arguments["eventId"] as! String
+
+            self.deleteAttendees(eventId: eventId, arguments: arguments)
         }
+//        else {
+//            result.notImplemented()
+//        }
     }
 
     private func secondsToMinutes(seconds: Int64) -> Int64 {
@@ -149,7 +181,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             let calendar = Calendar(id: ekCalendar.calendarIdentifier, name: ekCalendar.title, accountName: "", ownerName: "", isReadOnly: !ekCalendar.allowsContentModifications)
             calendars.append(calendar)
         }
-        print("isEmpty", ekCalendars.count)
+
         let jsonEncoder = JSONEncoder()
         var jsonString = ""
         do {
@@ -201,7 +233,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
             var attendees = [Attendee]()
             if (ekEvent.hasAttendees) {
-                attendees = getAttendees(attendeesList: ekEvent.attendees!)
+                attendees = getAttendees(eventId: ekEvent.eventIdentifier)
             }
 
             let event = CalendarEvent(
@@ -301,20 +333,146 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func getAttendees(attendeesList: [EKParticipant?]) -> [Attendee] {
+    private func getAttendees(eventId: String) -> [Attendee] {
+        if(!hasPermissions()) {
+            requestPermissions()
+        }
+        let ekEvent = self.eventStore.event(withIdentifier: eventId)
+        if (!ekEvent!.hasAttendees) {
+            return []
+        }
+
+        let attendeesList = ekEvent!.attendees
         var attendees = [Attendee]()
-        for attendeeElement in attendeesList {
-            if attendeeElement == nil {
+        var organiser: Attendee?
+        for attendeeElement in attendeesList! {
+            let isOrganiser = ekEvent!.organizer?.emailAddress == attendeeElement.emailAddress!
+
+            let existingAttendee = attendees.first { element in
+                return element.emailAddress == attendeeElement.emailAddress
+            }
+            if existingAttendee != nil && isOrganiser {
                 continue
             }
 
-            let attendee = Attendee(name: attendeeElement!.name, emailAddress: attendeeElement!.emailAddress!)
-            attendees.append(attendee)
+            let attendee = Attendee(name: attendeeElement.name, emailAddress: attendeeElement.emailAddress!, isOrganiser: isOrganiser)
+            if(isOrganiser) {
+                organiser = attendee
+            } else {
+                attendees.append(attendee)
+            }
+        }
+        attendees = attendees.sorted { $0.name! < $1.name! }
+
+        if organiser != nil && !attendees.isEmpty {
+            attendees.insert(organiser!, at: 0)
         }
         return attendees
     }
 
+    private func addAttendees(eventId: String, arguments: Dictionary<String, AnyObject>) {
+        if(!hasPermissions()) {
+            requestPermissions()
+        }
+        let ekEvent = self.eventStore.event(withIdentifier: eventId)
+        let attendeesArguments = arguments["attendees"] as! NSArray
+        var attendees = Set<EKParticipant>()
+
+        for attendeeArg in attendeesArguments {
+            let attendeeMap = attendeeArg as! Dictionary<String, AnyObject>
+            let emailAddress = attendeeMap["emailAddress"] as! String
+            let name = attendeeMap["name"] as! String
+            let isOrganiser = attendeeMap["isOrganiser"] as! Bool
+
+
+            let attendee = self.createEKParticipant(name: name, emailAddress: emailAddress, isOrganiser: isOrganiser)
+
+            if(attendee == nil) {
+                continue
+            }
+
+            attendees.insert(attendee!)
+        }
+
+        // include existing attendees to the new list (to avoid override)
+        if (ekEvent!.hasAttendees) {
+            let attendeesList = ekEvent!.attendees
+            for attendeeElement in attendeesList! {
+                let existingAttendee = attendees.first { element in
+                    return element.emailAddress == attendeeElement.emailAddress
+                }
+                if existingAttendee != nil {
+                    if ekEvent!.organizer?.emailAddress == attendeeElement.emailAddress {
+                        attendees.insert(existingAttendee!)
+                    }
+                    continue
+                }
+
+                let attendee = self.createEKParticipant(name: attendeeElement.name!, emailAddress: attendeeElement.emailAddress!, isOrganiser: attendeeElement.isCurrentUser)
+
+                if(attendee == nil) {
+                    continue
+                }
+
+                attendees.insert(attendee!)
+            }
+        }
+
+        ekEvent!.setValue(Array(attendees), forKey: "attendees")
+
+        do {
+            try self.eventStore.save(ekEvent!, span: .futureEvents)
+        } catch {
+            self.eventStore.reset()
+        }
+    }
+
+    private func createEKParticipant(name: String, emailAddress: String, isOrganiser: Bool) -> EKParticipant? {
+        let attendeeClasss: AnyClass? = NSClassFromString("EKAttendee")
+        if let type = attendeeClasss as? NSObject.Type {
+            let attendee = type.init()
+            attendee.setValue(name, forKey: "displayName")
+            attendee.setValue(emailAddress, forKey: "emailAddress")
+
+            return attendee as? EKParticipant
+        }
+        return nil
+    }
+
+    private func deleteAttendees(eventId: String, arguments: Dictionary<String, AnyObject>) {
+        if(!hasPermissions()) {
+            requestPermissions()
+        }
+        let attendeesMap = arguments["attendee"] as! Dictionary<String, AnyObject>
+        let ekEvent = self.eventStore.event(withIdentifier: eventId)
+
+        if !(ekEvent!.hasAttendees) {
+            return
+        }
+        let emailAddress = attendeesMap["emailAddress"] as! String
+
+        var attendees = ekEvent!.attendees!
+        let foundIndex = attendees.firstIndex { element in
+            return element.emailAddress == emailAddress
+        }
+        if foundIndex == nil {
+            return
+        }
+        attendees.remove(at: foundIndex!)
+
+        ekEvent!.setValue(attendees, forKey: "attendees")
+
+        do {
+            try self.eventStore.save(ekEvent!, span: .futureEvents)
+        } catch {
+            self.eventStore.reset()
+        }
+    }
+
     private func addReminder(eventId: String, reminder: Reminder) {
+        if(!hasPermissions()) {
+            requestPermissions()
+        }
         let ekEvent = self.eventStore.event(withIdentifier: eventId)
         let seconds = self.minutesToSeconds(minutes: reminder.minutes)
 
@@ -339,6 +497,9 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
 
     private func deleteReminder(eventId: String) -> Bool {
+        if(!hasPermissions()) {
+            requestPermissions()
+        }
         let ekEvent = self.eventStore.event(withIdentifier: eventId)
         if(!ekEvent!.hasAlarms) {
             return false
@@ -357,6 +518,9 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 extension EKParticipant {
     var emailAddress: String? {
         return self.value(forKey: "emailAddress") as? String
+    }
+    var isOrganiser: Bool? {
+        return self.value(forKey: "isOrganiser") as? Bool
     }
 }
 

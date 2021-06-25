@@ -34,7 +34,7 @@ class CalendarPluginCheck extends StatelessWidget {
               }
             });
           },
-          child: Text("Show Calendars"),
+          child: Text('Show Calendars'),
         ),
       ),
     );

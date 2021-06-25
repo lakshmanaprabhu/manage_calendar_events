@@ -18,7 +18,6 @@ class CalendarPlugin {
       print(e);
     }
 
-    print("hasPermissions - " + hasPermission.toString());
     return hasPermission;
   }
 
@@ -52,7 +51,7 @@ class CalendarPlugin {
     List<CalendarEvent>? events = [];
     try {
       String eventsJson = await _channel.invokeMethod(
-          'getEvents', <String, Object?>{"calendarId": calendarId});
+          'getEvents', <String, Object?>{'calendarId': calendarId});
       events =
           json.decode(eventsJson).map<CalendarEvent>((decodedCalendarEvent) {
         return CalendarEvent.fromJson(decodedCalendarEvent);
@@ -133,6 +132,11 @@ class CalendarPlugin {
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
           'url': event.url,
           'reminder': event.reminder != null ? event.reminder!.minutes : null,
+          'attendees': event.attendees != null
+              ? event.attendees!.attendees
+                  .map((attendee) => attendee.toJson())
+                  .toList()
+              : null,
         },
       );
     } catch (e) {
@@ -152,7 +156,7 @@ class CalendarPlugin {
       eventId = await _channel.invokeMethod(
         'updateEvent',
         <String, Object?>{
-          "calendarId": calendarId,
+          'calendarId': calendarId,
           'eventId': event.eventId != null ? event.eventId : null,
           'title': event.title,
           'description': event.description,
@@ -163,6 +167,11 @@ class CalendarPlugin {
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
           'url': event.url,
           'reminder': event.reminder != null ? event.reminder!.minutes : null,
+          'attendees': event.attendees != null
+              ? event.attendees!.attendees
+                  .map((attendee) => attendee.toJson())
+                  .toList()
+              : null,
         },
       );
     } catch (e) {
@@ -181,7 +190,7 @@ class CalendarPlugin {
       isDeleted = await _channel.invokeMethod(
         'deleteEvent',
         <String, Object?>{
-          "calendarId": calendarId,
+          'calendarId': calendarId,
           'eventId': eventId,
         },
       );
@@ -201,7 +210,7 @@ class CalendarPlugin {
       await _channel.invokeMethod(
         'addReminder',
         <String, Object?>{
-          "calendarId": calendarId,
+          'calendarId': calendarId,
           'eventId': eventId,
           'minutes': minutes.toString(),
         },
@@ -222,7 +231,7 @@ class CalendarPlugin {
       updateCount = await _channel.invokeMethod(
         'updateReminder',
         <String, Object?>{
-          "calendarId": calendarId,
+          'calendarId': calendarId,
           'eventId': eventId,
           'minutes': minutes.toString(),
         },
@@ -247,6 +256,63 @@ class CalendarPlugin {
       print(e);
     }
     return updateCount;
+  }
+
+  /// Returns all the available Attendees on the selected event
+  Future<List<Attendee>?> getAttendees({
+    required String eventId,
+  }) async {
+    List<Attendee>? attendees;
+    try {
+      String attendeesJson =
+          await _channel.invokeMethod('getAttendees', <String, Object?>{
+        'eventId': eventId,
+      });
+      attendees = json.decode(attendeesJson).map<Attendee>((decodedAttendee) {
+        return Attendee.fromJson(decodedAttendee);
+      }).toList();
+    } catch (e) {
+      print(e);
+    }
+
+    return attendees;
+  }
+
+  /// Helps to add Attendees to an Event
+  Future<void> addAttendees({
+    required String eventId,
+    required List<Attendee> newAttendees,
+  }) async {
+    try {
+      await _channel.invokeMethod(
+        'addAttendees',
+        <String, Object?>{
+          'eventId': eventId,
+          'attendees':
+              newAttendees.map((attendee) => attendee.toJson()).toList(),
+        },
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  /// Helps to remove an Attendee from an Event
+  Future<void> deleteAttendee({
+    required String eventId,
+    required Attendee attendee,
+  }) async {
+    try {
+      await _channel.invokeMethod(
+        'deleteAttendee',
+        <String, Object?>{
+          'eventId': eventId,
+          'attendee': attendee.toJson(),
+        },
+      );
+    } catch (e) {
+      print(e);
+    }
   }
 
   /// Find the first date of the month which contains the provided date.

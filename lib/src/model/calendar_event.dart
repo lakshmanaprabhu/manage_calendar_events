@@ -25,6 +25,8 @@ class CalendarEvent {
     this.isAllDay = false,
     this.hasAlarm = false,
     this.url,
+    this.attendees,
+    this.reminder,
   });
 
   CalendarEvent.fromJson(Map<String, dynamic> data) {
@@ -96,6 +98,14 @@ class Attendee {
       : this.name = data['name'],
         this.emailAddress = data['emailAddress'],
         this.isOrganiser = data['isOrganiser'] ?? false;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'emailAddress': emailAddress,
+      'isOrganiser': isOrganiser,
+    };
+  }
 
   @override
   String toString() {
