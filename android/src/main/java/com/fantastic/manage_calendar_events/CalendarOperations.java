@@ -2,6 +2,7 @@ package com.fantastic.manage_calendar_events;
 
 import android.Manifest.permission;
 import android.app.Activity;
+import android.content.Context;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
@@ -43,20 +44,21 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
 
             };
 
+    private Context ctx;
     private Activity activity;
 
-    public CalendarOperations(Activity activity) {
-        this.activity = activity;
+    public CalendarOperations(Activity activity, Context ctx) {
+        this.activity = activity; this.ctx = ctx;
     }
 
 
     boolean hasPermissions() {
         if (23 <= android.os.Build.VERSION.SDK_INT) {
             boolean writeCalendarPermissionGranted =
-                    activity.checkSelfPermission(permission.WRITE_CALENDAR)
+                    ctx.checkSelfPermission(permission.WRITE_CALENDAR)
                             == PackageManager.PERMISSION_GRANTED;
             boolean readCalendarPermissionGranted =
-                    activity.checkSelfPermission(permission.READ_CALENDAR)
+                    ctx.checkSelfPermission(permission.READ_CALENDAR)
                             == PackageManager.PERMISSION_GRANTED;
 
             return writeCalendarPermissionGranted && readCalendarPermissionGranted;
@@ -74,7 +76,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
     }
 
     public ArrayList<Calendar> getCalendars() {
-        ContentResolver cr = activity.getContentResolver();
+        ContentResolver cr = ctx.getContentResolver();
         ArrayList<Calendar> calendarList = new ArrayList<>();
 
         String[] mProjection =
@@ -138,7 +140,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         if (!hasPermissions()) {
             requestPermissions();
         }
-        ContentResolver cr = activity.getContentResolver();
+        ContentResolver cr = ctx.getContentResolver();
 
         ArrayList<CalendarEvent> calendarEvents = new ArrayList<>();
 
@@ -199,7 +201,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
             requestPermissions();
         }
 
-        ContentResolver cr = activity.getContentResolver();
+        ContentResolver cr = ctx.getContentResolver();
 
         String currentTimeZone = java.util.Calendar.getInstance().getTimeZone().getDisplayName();
         String eventId = event.getEventId() != null ? event.getEventId() : null;
@@ -246,7 +248,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                 Events.CALENDAR_ID + " = " + calendarId + " AND " + CalendarContract.Instances._ID
                         + " = " + eventId;
 
-        int updCount = activity.getContentResolver().delete(uri, selection, null);
+        int updCount = ctx.getContentResolver().delete(uri, selection, null);
         return updCount != 0;
     }
 
@@ -261,7 +263,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         if (!hasPermissions()) {
             requestPermissions();
         }
-        ContentResolver cr = activity.getContentResolver();
+        ContentResolver cr = ctx.getContentResolver();
 
         String[] mProjection =
                 {
@@ -343,7 +345,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
             return;
         }
 
-        ContentResolver cr = activity.getContentResolver();
+        ContentResolver cr = ctx.getContentResolver();
         ContentValues[] valuesArray = new ContentValues[attendees.size()];
 
         for (int i = 0, attendeesSize = attendees.size(); i < attendeesSize; i++) {
@@ -373,7 +375,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
                         + " AND " + CalendarContract.Attendees.ATTENDEE_EMAIL
                         + " = '" + attendee.getEmailAddress() + "'";
 
-        int updCount = activity.getContentResolver().delete(uri, selection, null);
+        int updCount = ctx.getContentResolver().delete(uri, selection, null);
         return updCount;
     }
 
@@ -385,7 +387,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         Uri uri = CalendarContract.Attendees.CONTENT_URI;
         String selection = CalendarContract.Attendees.EVENT_ID + " = " + eventId;
 
-        int updCount = activity.getContentResolver().delete(uri, selection, null);
+        int updCount = ctx.getContentResolver().delete(uri, selection, null);
         return updCount;
     }
 
@@ -394,7 +396,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         if (!hasPermissions()) {
             requestPermissions();
         }
-        ContentResolver cr = activity.getContentResolver();
+        ContentResolver cr = ctx.getContentResolver();
 
         String[] mProjection =
                 {
@@ -430,7 +432,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
 
         CalendarEvent event = getEvent(calendarId, eventId);
 
-        ContentResolver cr = activity.getContentResolver();
+        ContentResolver cr = ctx.getContentResolver();
         ContentValues values = new ContentValues();
 
         values.put(CalendarContract.Reminders.EVENT_ID, event.getEventId());
@@ -454,7 +456,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         Uri uri = CalendarContract.Reminders.CONTENT_URI;
 
         String selection = CalendarContract.Reminders.EVENT_ID + " = " + event.getEventId();
-        int updCount = activity.getContentResolver()
+        int updCount = ctx.getContentResolver()
                 .update(uri, contentValues, selection, null);
         return updCount;
     }
@@ -467,7 +469,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
         Uri uri = CalendarContract.Reminders.CONTENT_URI;
         String selection = CalendarContract.Reminders.EVENT_ID + " = " + eventId;
 
-        int updCount = activity.getContentResolver().delete(uri, selection, null);
+        int updCount = ctx.getContentResolver().delete(uri, selection, null);
         return updCount;
     }
 

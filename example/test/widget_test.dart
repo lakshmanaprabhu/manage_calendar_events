@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:manage_calendar_events_example/screens/calendar_list.dart';
+import '../lib/screens/calendar_list.dart';
 
 void main() {
   testWidgets('Verify Platform version', (WidgetTester tester) async {
