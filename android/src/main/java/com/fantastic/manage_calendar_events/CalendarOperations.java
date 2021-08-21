@@ -53,7 +53,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
 
 
     boolean hasPermissions() {
-        if (23 <= android.os.Build.VERSION.SDK_INT) {
+        if (23 <= android.os.Build.VERSION.SDK_INT && activity != null) {
             boolean writeCalendarPermissionGranted =
                     ctx.checkSelfPermission(permission.WRITE_CALENDAR)
                             == PackageManager.PERMISSION_GRANTED;
@@ -68,7 +68,7 @@ public class CalendarOperations { // implements PluginRegistry.RequestPermission
     }
 
     void requestPermissions() {
-        if (23 <= android.os.Build.VERSION.SDK_INT) {
+        if (23 <= android.os.Build.VERSION.SDK_INT && activity != null) {
             String[] permissions = new String[]{permission.WRITE_CALENDAR,
                     permission.READ_CALENDAR};
             activity.requestPermissions(permissions, MY_CAL_REQ);
