@@ -5,14 +5,16 @@ class Calendar {
   String? name;
   String? accountName;
   String? ownerName;
+  bool? isReadOnly;
 
-  Calendar({required this.id, this.name, this.accountName, this.ownerName});
+  Calendar({required this.id, this.name, this.accountName, this.ownerName, this.isReadOnly});
 
   Calendar.fromJson(Map<String, dynamic> data) {
     this.id = data["id"];
     this.name = data["name"];
     this.accountName = data["accountName"];
     this.ownerName = data["ownerName"];
+    this.isReadOnly = data["isReadOnly"];
   }
 
   Map<String, dynamic> toJson() {
@@ -21,6 +23,7 @@ class Calendar {
     data["name"] = this.name;
     data["accountName"] = this.accountName;
     data["ownerName"] = this.ownerName;
+    data["isReadOnly"] = this.isReadOnly;
     return data;
   }
 }
