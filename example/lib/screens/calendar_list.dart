@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:manage_calendar_events/manage_calendar_events.dart';
-import 'package:manage_calendar_events_example/screens/event_list.dart';
+import 'event_list.dart';
 
 class CalendarList extends StatelessWidget {
   final CalendarPlugin _myPlugin = CalendarPlugin();

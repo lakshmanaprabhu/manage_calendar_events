@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
 import 'package:manage_calendar_events/manage_calendar_events.dart';
-import 'package:manage_calendar_events_example/screens/event_details.dart';
+import 'event_details.dart';
 
 class EventList extends StatefulWidget {
   final String calendarId;
@@ -73,8 +73,7 @@ class _EventListState extends State<EventList> {
                 ),
                 child: ListTile(
                   title: Text(event.title!),
-                  subtitle: Text(DateFormat('yyyy-MM-dd hh:mm:ss')
-                      .format(event.startDate!)),
+                  subtitle: Text(event.startDate!.toIso8601String()),
                   onTap: () {
                     Navigator.push(
                       context,

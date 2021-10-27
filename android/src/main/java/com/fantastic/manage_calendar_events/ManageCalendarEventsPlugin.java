@@ -40,7 +40,8 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
         Context context = registrar.context();
         Activity activity = registrar.activity();
 
-        CalendarOperations CalendarOperations = new CalendarOperations(activity);
+
+        CalendarOperations CalendarOperations = new CalendarOperations(activity, context);
 
         final MethodChannel channel = new MethodChannel(registrar.messenger(),
                 "manage_calendar_events");
