@@ -2,9 +2,9 @@ package io.flutter.plugins;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import io.flutter.Log;
 
 import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 
 /**
  * Generated file. Do not edit.
@@ -13,8 +13,12 @@ import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
  */
 @Keep
 public final class GeneratedPluginRegistrant {
+  private static final String TAG = "GeneratedPluginRegistrant";
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
-    ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(flutterEngine);
-      com.fantastic.manage_calendar_events.ManageCalendarEventsPlugin.registerWith(shimPluginRegistry.registrarFor("com.fantastic.manage_calendar_events.ManageCalendarEventsPlugin"));
+    try {
+      flutterEngine.getPlugins().add(new com.fantastic.manage_calendar_events.ManageCalendarEventsPlugin());
+    } catch(Exception e) {
+      Log.e(TAG, "Error registering plugin manage_calendar_events, com.fantastic.manage_calendar_events.ManageCalendarEventsPlugin", e);
+    }
   }
 }

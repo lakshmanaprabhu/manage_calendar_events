@@ -7,7 +7,13 @@ class Calendar {
   String? ownerName;
   bool? isReadOnly;
 
-  Calendar({required this.id, this.name, this.accountName, this.ownerName, this.isReadOnly});
+  Calendar({
+    required this.id,
+    this.name,
+    this.accountName,
+    this.ownerName,
+    this.isReadOnly,
+  });
 
   Calendar.fromJson(Map<String, dynamic> data) {
     this.id = data["id"];

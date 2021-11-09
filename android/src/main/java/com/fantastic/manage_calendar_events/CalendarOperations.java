@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class CalendarOperations { // implements PluginRegistry.RequestPermissionsResultListener {
+public class CalendarOperations {
 
     private static final int MY_CAL_REQ = 101;
     private static final int MY_CAL_WRITE_REQ = 102;

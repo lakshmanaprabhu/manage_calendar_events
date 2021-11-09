@@ -1,3 +1,6 @@
+## 2.0.1
+* Supporting the new Android plugins APIs. Ref: https://flutter.dev/docs/development/packages-and-plugins/plugin-api-migration
+
 ## 2.0.0
 * Add Attendee field support on the Event both iOS and Android
 ## 1.0.9

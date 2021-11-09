@@ -2,6 +2,9 @@ package com.fantastic.manage_calendar_events;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.fantastic.manage_calendar_events.models.Calendar;
 import com.fantastic.manage_calendar_events.models.CalendarEvent;
@@ -11,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -20,17 +27,40 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /**
  * ManageCalendarEventsPlugin
  */
-public class ManageCalendarEventsPlugin implements MethodCallHandler {
+public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware, MethodCallHandler {
 
-    private final MethodChannel methodChannel;
-    private final CalendarOperations operations;
+    private static final String channelName = "manage_calendar_events";
     private final Gson gson = new Gson();
 
-    public ManageCalendarEventsPlugin(MethodChannel methodChannel, CalendarOperations operations) {
-        this.methodChannel = methodChannel;
-        this.methodChannel.setMethodCallHandler(this);
+    private MethodChannel methodChannel;
+    private BinaryMessenger binaryMessenger;
+    private Context context;
+    private Activity activity;
+    private CalendarOperations operations;
 
-        this.operations = operations;
+    private static void setup(ManageCalendarEventsPlugin plugin, BinaryMessenger binaryMessenger,
+                              Activity activity, Context context) {
+        plugin.binaryMessenger = binaryMessenger;
+        plugin.activity = activity;
+        plugin.context = context;
+        plugin.operations = new CalendarOperations(activity, context);
+
+        plugin.methodChannel = new MethodChannel(binaryMessenger, channelName);
+        plugin.methodChannel.setMethodCallHandler(plugin);
+    }
+
+
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+        Log.d("DART/NATIVE", "onAttachedToEngine");
+        binaryMessenger= flutterPluginBinding.getBinaryMessenger();
+        context = flutterPluginBinding.getApplicationContext();
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        Log.d("DART/NATIVE", "onDetachedFromEngine");
+        methodChannel.setMethodCallHandler(null);
     }
 
     /**
@@ -39,15 +69,30 @@ public class ManageCalendarEventsPlugin implements MethodCallHandler {
     public static void registerWith(Registrar registrar) {
         Context context = registrar.context();
         Activity activity = registrar.activity();
+        setup(new ManageCalendarEventsPlugin(), registrar.messenger(), activity, context);
+    }
 
 
-        CalendarOperations CalendarOperations = new CalendarOperations(activity, context);
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        Log.d("DART/NATIVE", "onAttachedToActivity");
+        activity = binding.getActivity();
+        setup(this, binaryMessenger, activity, context );
+    }
 
-        final MethodChannel channel = new MethodChannel(registrar.messenger(),
-                "manage_calendar_events");
-        channel.setMethodCallHandler(new ManageCalendarEventsPlugin(channel, CalendarOperations));
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        Log.d("DART/NATIVE", "onDetachedFromActivityForConfigChanges");
+    }
 
-        // registrar.addRequestPermissionsResultListener(CalendarOperations);
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+        Log.d("DART/NATIVE", "onReattachedToActivityForConfigChanges");
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        Log.d("DART/NATIVE", "onDetachedFromActivity");
     }
 
     @Override
