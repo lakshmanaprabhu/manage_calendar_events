@@ -19,7 +19,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
     struct CalendarEvent: Codable {
         var eventId: String?
-        let title: String
+        let title: String?
         let description: String?
         let startDate: Int64
         let endDate: Int64
@@ -37,7 +37,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
     struct Attendee: Codable {
         let name: String?
-        let emailAddress: String
+        let emailAddress: String?
         let isOrganiser: Bool
     }
 
