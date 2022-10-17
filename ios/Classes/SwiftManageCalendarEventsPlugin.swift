@@ -19,7 +19,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
     struct CalendarEvent: Codable {
         var eventId: String?
-        let title: String
+        let title: String?
         let description: String?
         let startDate: Int64
         let endDate: Int64
@@ -37,7 +37,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
     struct Attendee: Codable {
         let name: String?
-        let emailAddress: String
+        let emailAddress: String?
         let isOrganiser: Bool
     }
 
@@ -201,9 +201,12 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let selectedCalendar = self.eventStore.calendar(withIdentifier: calendarId)
         let startDate = NSDate(timeIntervalSinceNow: -60 * 60 * 24 * 180)
         let endDate = NSDate(timeIntervalSinceNow: 60 * 60 * 24 * 180)
-        let predicate = eventStore.predicateForEvents(withStart: startDate as Date, end: endDate as Date, calendars: [selectedCalendar!])
+        if (selectedCalendar != nil) {
+            let predicate = eventStore.predicateForEvents(withStart: startDate as Date, end: endDate as Date, calendars: [selectedCalendar!])
 
-        return getEvents(predicate: predicate)
+            return getEvents(predicate: predicate)
+        }
+        return "[]"
     }
 
     private func getEventsByDateRange(calendarId: String, startDate: Int64, endDate: Int64) -> String? {
@@ -213,9 +216,12 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let selectedCalendar = self.eventStore.calendar(withIdentifier: calendarId)
         let startDate = Date (timeIntervalSince1970: Double(startDate) / 1000.0)
         let endDate = Date (timeIntervalSince1970: Double(endDate) / 1000.0)
-        let predicate = eventStore.predicateForEvents(withStart: startDate as Date, end: endDate as Date, calendars: [selectedCalendar!])
+        if (selectedCalendar != nil) {
+            let predicate = eventStore.predicateForEvents(withStart: startDate as Date, end: endDate as Date, calendars: [selectedCalendar!])
 
-        return getEvents(predicate: predicate)
+            return getEvents(predicate: predicate)
+        }
+        return "[]"
     }
 
     private func getEvents(predicate: NSPredicate) -> String? {
@@ -362,7 +368,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 attendees.append(attendee)
             }
         }
-        attendees = attendees.sorted { $0.name! < $1.name! }
+        attendees = attendees.sorted { ($0.name == nil ? "" : $0.name!) < ($1.name == nil ? "" : $1.name!) }
 
         if organiser != nil && !attendees.isEmpty {
             attendees.insert(organiser!, at: 0)
