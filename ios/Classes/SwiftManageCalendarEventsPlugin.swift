@@ -362,7 +362,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 attendees.append(attendee)
             }
         }
-        attendees = attendees.sorted { $0.name! < $1.name! }
+        attendees = attendees.sorted { ($0.name == nil ? "" : $0.name!) < ($1.name == nil ? "" : $1.name!) }
 
         if organiser != nil && !attendees.isEmpty {
             attendees.insert(organiser!, at: 0)
