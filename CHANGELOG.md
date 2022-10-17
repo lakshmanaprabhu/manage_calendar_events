@@ -1,3 +1,6 @@
+## 2.0.2
+* Update the android compile/min SDK
+* Fixed some iOS issues with the help
 ## 2.0.1
 * Supporting the new Android plugins APIs. Ref: https://flutter.dev/docs/development/packages-and-plugins/plugin-api-migration
 

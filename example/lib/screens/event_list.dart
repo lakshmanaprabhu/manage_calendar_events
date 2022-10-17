@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:manage_calendar_events/manage_calendar_events.dart';
+
 import 'event_details.dart';
 
 class EventList extends StatefulWidget {
