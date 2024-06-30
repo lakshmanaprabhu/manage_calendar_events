@@ -35,7 +35,7 @@ class _EventDetailsState extends State<EventDetails> {
                 children: <Widget>[
                   Text(
                     'Description: ${this.widget.activeEvent.description}',
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   SizedBox(height: 20),
                   Text('Start Date: ${this.widget.activeEvent.startDate}'),

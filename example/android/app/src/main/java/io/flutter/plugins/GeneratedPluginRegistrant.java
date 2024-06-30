@@ -17,7 +17,7 @@ public final class GeneratedPluginRegistrant {
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
     try {
       flutterEngine.getPlugins().add(new com.fantastic.manage_calendar_events.ManageCalendarEventsPlugin());
-    } catch(Exception e) {
+    } catch (Exception e) {
       Log.e(TAG, "Error registering plugin manage_calendar_events, com.fantastic.manage_calendar_events.ManageCalendarEventsPlugin", e);
     }
   }
