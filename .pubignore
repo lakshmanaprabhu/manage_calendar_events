@@ -1,0 +1,6 @@
+build/
+.dart_tool/
+.flutter-plugins/
+local_config.json
+example/android/gradle/wrapper/gradle-wrapper.jar
+example/android/gradlew.bat
