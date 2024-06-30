@@ -5,8 +5,12 @@ import 'event_details.dart';
 
 class EventList extends StatefulWidget {
   final String calendarId;
+  final bool isReadOnly;
 
-  EventList({required this.calendarId});
+  EventList({
+    required this.calendarId,
+    this.isReadOnly = false,
+  });
 
   @override
   _EventListState createState() => _EventListState();
@@ -81,6 +85,7 @@ class _EventListState extends State<EventList> {
                           return EventDetails(
                             activeEvent: event,
                             calendarPlugin: _myPlugin,
+                            isReadOnly: widget.isReadOnly,
                           );
                         },
                       ),
@@ -95,12 +100,14 @@ class _EventListState extends State<EventList> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          _addEvent();
-        },
-      ),
+      floatingActionButton: widget.isReadOnly
+          ? null
+          : FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () {
+                _addEvent();
+              },
+            ),
     );
   }
 

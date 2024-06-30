@@ -6,10 +6,12 @@ import 'package:manage_calendar_events/manage_calendar_events.dart';
 class EventDetails extends StatefulWidget {
   final CalendarEvent activeEvent;
   final CalendarPlugin calendarPlugin;
+  final bool isReadOnly;
 
   EventDetails({
     required this.activeEvent,
     required this.calendarPlugin,
+    this.isReadOnly = false,
   });
 
   @override
@@ -60,14 +62,16 @@ class _EventDetailsState extends State<EventDetails> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          setState(() {
-            _addAttendee(widget.activeEvent.eventId!);
-          });
-        },
-      ),
+      floatingActionButton: widget.isReadOnly
+          ? null
+          : FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () async {
+                setState(() {
+                  _addAttendee(widget.activeEvent.eventId!);
+                });
+              },
+            ),
     );
   }
 

@@ -22,12 +22,18 @@ class CalendarList extends StatelessWidget {
               Calendar calendar = calendars[index];
               return ListTile(
                 title: Text(calendar.name!),
+                subtitle: calendar.isReadOnly != null && calendar.isReadOnly!
+                    ? Text('Read Only')
+                    : null,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return EventList(calendarId: calendar.id!);
+                        return EventList(
+                          calendarId: calendar.id!,
+                          isReadOnly: calendar.isReadOnly ?? false,
+                        );
                       },
                     ),
                   );
