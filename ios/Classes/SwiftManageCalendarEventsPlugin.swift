@@ -164,11 +164,19 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         return status == EKAuthorizationStatus.authorized
     }
 
-    private func requestPermissions() {
-        eventStore.requestAccess(to: .event, completion: {
-            (accessGranted: Bool, error: Error?) in
-            print("Access Granted")
-        })
+   private func requestPermissions() {
+        if #available(iOS 17.0, *) {
+            eventStore.requestFullAccessToEvents(completion: {
+                granted, error in
+                    print("Access granted")
+            })
+        } else {
+            // Fallback on earlier versions
+            eventStore.requestAccess(to: .event, completion: {
+                (accessGranted: Bool, error: Error?) in
+                print("Access Granted")
+            })
+        }
     }
 
     private func getCalendars() -> String? {
