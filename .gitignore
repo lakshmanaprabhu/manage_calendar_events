@@ -18,5 +18,6 @@ android/gradle/wrapper/gradle-wrapper.properties
 android/gradlew
 android/gradlew.bat
 android/gradle/wrapper/gradle-wrapper.jar
-*.iml
+android/manage_calendar_events.iml
+android/manage_calendar_events_android.iml
 doc/api
