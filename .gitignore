@@ -1,5 +1,6 @@
 .idea
 example/android/.gradle
+example/android/app/.cxx
 example/build/app/generated
 example/build
 .packages
