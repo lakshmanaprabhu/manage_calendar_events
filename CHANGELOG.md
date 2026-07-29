@@ -1,3 +1,9 @@
+## 2.1.0
+* Update to support the latest Android and iOS toolchains
+  * Android: AGP 8.7.0, Kotlin 1.8.22, compileSdk 35, minSdk 21, Java 11
+  * iOS: raise deployment target to 12.0
+* Raise Dart/Flutter SDK constraints (Dart >=3.4.0, Flutter >=3.24.0)
+* Add `repository` field to pubspec.yaml
 ## 2.0.3
 * Update the android compile/min SDK
 * Update the iOS latest support
