@@ -15,7 +15,7 @@ class CalendarPlugin {
     try {
       hasPermission = await _channel.invokeMethod('hasPermissions');
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
 
     return hasPermission;
@@ -26,7 +26,7 @@ class CalendarPlugin {
     try {
       await _channel.invokeMethod('requestPermissions');
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
 
     return;
@@ -41,7 +41,7 @@ class CalendarPlugin {
         return Calendar.fromJson(decodedCalendar);
       }).toList();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return calendars;
   }
@@ -57,7 +57,7 @@ class CalendarPlugin {
         return CalendarEvent.fromJson(decodedCalendarEvent);
       }).toList();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return events;
   }
@@ -81,7 +81,7 @@ class CalendarPlugin {
         return CalendarEvent.fromJson(decodedCalendarEvent);
       }).toList();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return events;
   }
@@ -140,7 +140,7 @@ class CalendarPlugin {
         },
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return eventId;
   }
@@ -175,7 +175,7 @@ class CalendarPlugin {
         },
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return eventId;
   }
@@ -195,7 +195,7 @@ class CalendarPlugin {
         },
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return isDeleted;
   }
@@ -216,7 +216,7 @@ class CalendarPlugin {
         },
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -237,7 +237,7 @@ class CalendarPlugin {
         },
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return updateCount;
   }
@@ -253,7 +253,7 @@ class CalendarPlugin {
         },
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return updateCount;
   }
@@ -272,7 +272,7 @@ class CalendarPlugin {
         return Attendee.fromJson(decodedAttendee);
       }).toList();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
 
     return attendees;
@@ -293,7 +293,7 @@ class CalendarPlugin {
         },
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -311,14 +311,13 @@ class CalendarPlugin {
         },
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
   /// Find the first date of the month which contains the provided date.
   DateTime findFirstDateOfTheMonth(DateTime dateTime) {
     DateTime firstDayOfMonth = DateTime.utc(dateTime.year, dateTime.month, 1);
-    print('firstDayOfMonth - $firstDayOfMonth');
     return firstDayOfMonth;
   }
 
@@ -326,7 +325,6 @@ class CalendarPlugin {
   DateTime findLastDateOfTheMonth(DateTime dateTime) {
     DateTime lastDayOfMonth = DateTime.utc(dateTime.year, dateTime.month + 1, 1)
         .subtract(Duration(hours: 1));
-    print('lastDayOfMonth - $lastDayOfMonth');
     return lastDayOfMonth;
   }
 

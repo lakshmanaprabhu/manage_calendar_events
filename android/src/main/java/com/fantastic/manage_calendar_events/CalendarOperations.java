@@ -27,7 +27,6 @@ import java.util.Set;
 public class CalendarOperations {
 
     private static final int MY_CAL_REQ = 101;
-    private static final int MY_CAL_WRITE_REQ = 102;
 
     private static final String[] EVENT_PROJECTION =
             {

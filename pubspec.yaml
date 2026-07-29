@@ -1,9 +1,13 @@
 name: manage_calendar_events
 description: A flutter plugin which will help you to add, edit and remove the
   events (with reminders) from your (Android and ios) calendars
-version: 2.1.0
+version: 2.1.1
 homepage: https://github.com/lakshmanaprabhu/manage_calendar_events
 repository: https://github.com/lakshmanaprabhu/manage_calendar_events
+topics:
+  - calendar
+  - events
+  - reminders
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -16,6 +20,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^5.0.0
 
 # The following section is specific to Flutter.
 flutter:

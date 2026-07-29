@@ -1,3 +1,13 @@
+## 2.1.1
+* Fix iOS crashes reported in #3, #27, #28, #33, #34, #39:
+  * `createEvent`/`updateEvent` no longer crash when `title`/`description` are nil (#3)
+  * `deleteEvent` no longer crashes when the event can't be found (#33, #34)
+  * `getAttendees`/event fetching no longer crash on attendees without an email address, or events without alarms (#27, #28)
+  * `addAttendees` no longer crashes when merging existing participants that lack a name/email (#39)
+* Remove stray `print()` calls from the Dart API surface; route error logging through `debugPrint`
+* Add `analysis_options.yaml` (`flutter_lints`) and `topics` to pubspec.yaml
+* Remove vestigial `gradlew`/`gradlew.bat`/`gradle-wrapper.jar`/`.iml` files from the plugin's own `android/` folder (never needed by consumers)
+* Remove unused `MY_CAL_WRITE_REQ` constant in `CalendarOperations.java`
 ## 2.1.0
 * Update to support the latest Android and iOS toolchains
   * Android: AGP 8.7.0, Kotlin 1.8.22, compileSdk 35, minSdk 21, Java 11

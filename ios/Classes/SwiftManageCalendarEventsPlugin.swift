@@ -71,8 +71,8 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
             let calendarId = arguments["calendarId"] as! String
             let eventId = arguments["eventId"] as? String
-            let title = arguments["title"] as! String
-            let description = arguments["description"] as! String
+            let title = arguments["title"] as? String ?? ""
+            let description = arguments["description"] as? String ?? ""
             let startDate = arguments["startDate"] as! Int64
             let endDate = arguments["endDate"] as! Int64
             let location = arguments["location"] as? String
@@ -233,8 +233,8 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             //            NSLog("event = %@",  ekEvent);
 
             var reminder: Reminder?
-            if(ekEvent.hasAlarms) {
-                reminder = Reminder(minutes: self.secondsToMinutes(seconds: Int64(ekEvent.alarms![0].relativeOffset)))
+            if let firstAlarm = ekEvent.alarms?.first {
+                reminder = Reminder(minutes: self.secondsToMinutes(seconds: Int64(firstAlarm.relativeOffset)))
             }
 
             var attendees = [Attendee]()
@@ -328,10 +328,12 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
     }
 
     private func deleteEvent(calendarId: String, eventId: String) -> Bool {
-        let ekEvent = self.eventStore.event(withIdentifier: eventId)
+        guard let ekEvent = self.eventStore.event(withIdentifier: eventId) else {
+            return false
+        }
 
         do {
-            try self.eventStore.remove(ekEvent!, span: .futureEvents)
+            try self.eventStore.remove(ekEvent, span: .futureEvents)
             return true
         } catch {
             self.eventStore.reset()
@@ -343,35 +345,35 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         if(!hasPermissions()) {
             requestPermissions()
         }
-        let ekEvent = self.eventStore.event(withIdentifier: eventId)
-        if (!ekEvent!.hasAttendees) {
+        guard let ekEvent = self.eventStore.event(withIdentifier: eventId), ekEvent.hasAttendees else {
             return []
         }
 
-        let attendeesList = ekEvent!.attendees
+        let attendeesList = ekEvent.attendees ?? []
         var attendees = [Attendee]()
         var organiser: Attendee?
-        for attendeeElement in attendeesList! {
-            let isOrganiser = ekEvent!.organizer?.emailAddress == attendeeElement.emailAddress!
+        for attendeeElement in attendeesList {
+            let attendeeEmail = attendeeElement.emailAddress ?? ""
+            let isOrganiser = ekEvent.organizer?.emailAddress == attendeeEmail
 
             let existingAttendee = attendees.first { element in
-                return element.emailAddress == attendeeElement.emailAddress
+                return element.emailAddress == attendeeEmail
             }
             if existingAttendee != nil && isOrganiser {
                 continue
             }
 
-            let attendee = Attendee(name: attendeeElement.name, emailAddress: attendeeElement.emailAddress!, isOrganiser: isOrganiser)
+            let attendee = Attendee(name: attendeeElement.name, emailAddress: attendeeEmail, isOrganiser: isOrganiser)
             if(isOrganiser) {
                 organiser = attendee
             } else {
                 attendees.append(attendee)
             }
         }
-        attendees = attendees.sorted { ($0.name == nil ? "" : $0.name!) < ($1.name == nil ? "" : $1.name!) }
+        attendees = attendees.sorted { ($0.name ?? "") < ($1.name ?? "") }
 
-        if organiser != nil && !attendees.isEmpty {
-            attendees.insert(organiser!, at: 0)
+        if let organiser = organiser, !attendees.isEmpty {
+            attendees.insert(organiser, at: 0)
         }
         return attendees
     }
@@ -380,7 +382,9 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         if(!hasPermissions()) {
             requestPermissions()
         }
-        let ekEvent = self.eventStore.event(withIdentifier: eventId)
+        guard let ekEvent = self.eventStore.event(withIdentifier: eventId) else {
+            return
+        }
         let attendeesArguments = arguments["attendees"] as! NSArray
         var attendees = Set<EKParticipant>()
 
@@ -401,20 +405,20 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         }
 
         // include existing attendees to the new list (to avoid override)
-        if (ekEvent!.hasAttendees) {
-            let attendeesList = ekEvent!.attendees
-            for attendeeElement in attendeesList! {
+        if (ekEvent.hasAttendees) {
+            let attendeesList = ekEvent.attendees ?? []
+            for attendeeElement in attendeesList {
                 let existingAttendee = attendees.first { element in
                     return element.emailAddress == attendeeElement.emailAddress
                 }
                 if existingAttendee != nil {
-                    if ekEvent!.organizer?.emailAddress == attendeeElement.emailAddress {
+                    if ekEvent.organizer?.emailAddress == attendeeElement.emailAddress {
                         attendees.insert(existingAttendee!)
                     }
                     continue
                 }
 
-                let attendee = self.createEKParticipant(name: attendeeElement.name!, emailAddress: attendeeElement.emailAddress!, isOrganiser: attendeeElement.isCurrentUser)
+                let attendee = self.createEKParticipant(name: attendeeElement.name ?? "", emailAddress: attendeeElement.emailAddress ?? "", isOrganiser: attendeeElement.isCurrentUser)
 
                 if(attendee == nil) {
                     continue
@@ -424,10 +428,10 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             }
         }
 
-        ekEvent!.setValue(Array(attendees), forKey: "attendees")
+        ekEvent.setValue(Array(attendees), forKey: "attendees")
 
         do {
-            try self.eventStore.save(ekEvent!, span: .futureEvents)
+            try self.eventStore.save(ekEvent, span: .futureEvents)
         } catch {
             self.eventStore.reset()
         }
