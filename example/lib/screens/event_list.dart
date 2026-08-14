@@ -14,7 +14,7 @@ class EventList extends StatefulWidget {
   });
 
   @override
-  _EventListState createState() => _EventListState();
+  State<EventList> createState() => _EventListState();
 }
 
 class _EventListState extends State<EventList> {

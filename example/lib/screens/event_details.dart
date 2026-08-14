@@ -16,7 +16,7 @@ class EventDetails extends StatefulWidget {
   });
 
   @override
-  _EventDetailsState createState() => _EventDetailsState();
+  State<EventDetails> createState() => _EventDetailsState();
 }
 
 class _EventDetailsState extends State<EventDetails> {
@@ -76,7 +76,7 @@ class _EventDetailsState extends State<EventDetails> {
     );
   }
 
-  buildAttendeeList() {
+  Widget buildAttendeeList() {
     return FutureBuilder<List<Attendee>?>(
       future: _getAttendees(widget.activeEvent.eventId!),
       builder: (context, snapshot) {
@@ -150,7 +150,7 @@ class _EventDetailsState extends State<EventDetails> {
     return await widget.calendarPlugin.getAttendees(eventId: eventId);
   }
 
-  _addAttendee(String eventId) async {
+  Future<void> _addAttendee(String eventId) async {
     var number = Random().nextInt(100);
     var newAttendee = Attendee(
         emailAddress: 'attendee$number@gmail.com', name: 'Attendee$number');

@@ -31,7 +31,7 @@ class CalendarPluginCheck extends StatelessWidget {
             _myPlugin.hasPermissions().then((value) {
               if (!value!) {
                 _myPlugin.requestPermissions();
-              } else {
+              } else if (context.mounted) {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => CalendarList()));
               }
