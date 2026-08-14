@@ -164,6 +164,10 @@ A full working app that exercises the whole API is in [`example/`](example).
 
 Issues and pull requests are welcome on [GitHub](https://github.com/lakshmanaprabhu/manage_calendar_events).
 
+## Author
+
+Maintained by [Lakshmanaprabhu R](https://lakshmanaprabhu.github.io).
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
