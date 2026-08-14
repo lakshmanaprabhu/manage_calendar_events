@@ -99,7 +99,8 @@ public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware,
             result.success(gson.toJson(calendarArrayList));
         } else if (call.method.equals("createCalendar")) {
             String calendarName = call.argument("calendarName");
-            Integer color = call.argument("color");
+            Number colorArg = call.argument("color");
+            Integer color = colorArg != null ? colorArg.intValue() : null;
             result.success(operations.createCalendar(calendarName, color));
         } else if (call.method.equals("deleteCalendar")) {
             String calendarId = call.argument("calendarId");
