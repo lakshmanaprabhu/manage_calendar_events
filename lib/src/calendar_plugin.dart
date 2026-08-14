@@ -1,8 +1,7 @@
 part of '../manage_calendar_events.dart';
 
 class CalendarPlugin {
-  static const MethodChannel _channel =
-      MethodChannel('manage_calendar_events');
+  static const MethodChannel _channel = MethodChannel('manage_calendar_events');
 
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
@@ -133,7 +132,7 @@ class CalendarPlugin {
           'url': event.url,
           'reminder': event.reminder?.minutes,
           'attendees': event.attendees?.attendees
-                  .map((attendee) => attendee.toJson())
+              .map((attendee) => attendee.toJson())
               .toList(),
         },
       );
@@ -166,7 +165,7 @@ class CalendarPlugin {
           'url': event.url,
           'reminder': event.reminder?.minutes,
           'attendees': event.attendees?.attendees
-                  .map((attendee) => attendee.toJson())
+              .map((attendee) => attendee.toJson())
               .toList(),
         },
       );

@@ -8,7 +8,7 @@ class EventList extends StatefulWidget {
   final bool isReadOnly;
 
   const EventList({
-    super.key, 
+    super.key,
     required this.calendarId,
     this.isReadOnly = false,
   });

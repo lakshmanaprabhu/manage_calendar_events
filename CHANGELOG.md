@@ -1,3 +1,8 @@
+## 2.1.3
+* Replace the LICENSE file with an actual MIT license (it previously just said "All rights reserved", which pub.dev flagged as `license:unknown`)
+* Rewrite README.md with badges, platform support table, full setup instructions (including the iOS 17 `NSCalendarsFullAccessUsageDescription` key), and copy-pasteable usage examples for every API method
+* Bump `flutter_lints` to `^6.0.0` and fix the two new lints it surfaced
+* `dart format` the whole `lib/`/`test/` tree
 ## 2.1.2
 * Fix #24: `addReminder` never resolved its result on Android or iOS, leaving the Dart `Future` hanging
 * Fix #42: `onDetachedFromEngine` NPE when the plugin is detached without ever attaching to an Activity

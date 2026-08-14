@@ -53,7 +53,7 @@ class CalendarEvent {
     }
   }
 
-  setReminder(Reminder reminder) {
+  void setReminder(Reminder reminder) {
     this.reminder = reminder;
   }
 }
@@ -73,7 +73,7 @@ class Attendees {
 
   Attendees({required this.attendees});
 
-  static fromJson(List<dynamic> data) {
+  static Attendees fromJson(List<dynamic> data) {
     List<Attendee> attendees = List.empty(growable: true);
     for (var element in data) {
       Attendee attendee = Attendee.fromJson(element);

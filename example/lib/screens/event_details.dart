@@ -9,7 +9,7 @@ class EventDetails extends StatefulWidget {
   final bool isReadOnly;
 
   const EventDetails({
-    super.key, 
+    super.key,
     required this.activeEvent,
     required this.calendarPlugin,
     this.isReadOnly = false,
