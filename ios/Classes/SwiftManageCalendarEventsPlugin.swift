@@ -95,8 +95,8 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 attendees: []
             )
             self.createUpdateEvent(calendarId: calendarId, event: &event)
-            if arguments["attendees"] as? NSObject != NSNull() {
-                self.addAttendees(eventId: event.eventId!, arguments: arguments)
+            if let savedEventId = event.eventId, arguments["attendees"] as? NSObject != NSNull() {
+                self.addAttendees(eventId: savedEventId, arguments: arguments)
             }
             result(event.eventId)
         } else if (call.method == "deleteEvent") {
@@ -109,6 +109,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             let eventId = arguments["eventId"] as! String
             let minutes = arguments["minutes"] as! NSString
             self.addReminder(eventId: eventId, reminder: Reminder(minutes: minutes.longLongValue))
+            result(nil)
         } else if (call.method == "updateReminder") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
             let eventId = arguments["eventId"] as! String
@@ -161,14 +162,24 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
     private func hasPermissions() -> Bool {
         let status = EKEventStore.authorizationStatus(for: .event)
+        if #available(iOS 17.0, *) {
+            return status == EKAuthorizationStatus.fullAccess
+        }
         return status == EKAuthorizationStatus.authorized
     }
 
     private func requestPermissions() {
-        eventStore.requestAccess(to: .event, completion: {
-            (accessGranted: Bool, error: Error?) in
-            print("Access Granted")
-        })
+        if #available(iOS 17.0, *) {
+            eventStore.requestFullAccessToEvents(completion: {
+                (accessGranted: Bool, error: Error?) in
+                print("Access Granted")
+            })
+        } else {
+            eventStore.requestAccess(to: .event, completion: {
+                (accessGranted: Bool, error: Error?) in
+                print("Access Granted")
+            })
+        }
     }
 
     private func getCalendars() -> String? {
@@ -283,45 +294,44 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let isAllDay = event.isAllDay
         let url = event.url
 
-        let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
-        //        if (!(ekCalendar!.allowsContentModifications)) {
-        //            return
-        //        }
+        guard let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId) else {
+            return
+        }
 
         var ekEvent: EKEvent?
         if(eventId == nil) {
             ekEvent = EKEvent.init(eventStore: self.eventStore)
         } else {
             ekEvent = self.eventStore.event(withIdentifier: eventId!)
-            //            if(ekEvent == nil) {
-            //                return
-            //            }
         }
 
-        ekEvent!.title = title
-        ekEvent!.notes = description
-        ekEvent!.startDate = startDate
-        ekEvent!.endDate = endDate
-        ekEvent!.calendar = ekCalendar!
-        ekEvent!.isAllDay = isAllDay
+        guard let ekEvent = ekEvent else {
+            return
+        }
+
+        ekEvent.title = title
+        ekEvent.notes = description
+        ekEvent.startDate = startDate
+        ekEvent.endDate = endDate
+        ekEvent.calendar = ekCalendar
+        ekEvent.isAllDay = isAllDay
 
         if(location != nil) {
-            ekEvent!.location = location
+            ekEvent.location = location
         }
 
         if(url != nil) {
-            ekEvent!.url = URL(string: url ?? "")
+            ekEvent.url = URL(string: url ?? "")
         }
 
-
-        if(reminder != nil) {
-            let alarm = EKAlarm.init(absoluteDate: Date.init(timeInterval: 1800, since: Date (timeIntervalSince1970: Double(event.startDate) / 1000.0)))
-            ekEvent!.addAlarm(alarm)
+        if let reminder = reminder {
+            let alarm = EKAlarm.init(relativeOffset: self.minutesToSeconds(minutes: reminder.minutes))
+            ekEvent.addAlarm(alarm)
         }
 
         do {
-            try self.eventStore.save(ekEvent!, span: .futureEvents)
-            event.eventId = ekEvent!.eventIdentifier
+            try self.eventStore.save(ekEvent, span: .futureEvents)
+            event.eventId = ekEvent.eventIdentifier
         } catch {
             self.eventStore.reset()
         }

@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 public class CalendarOperations {
 
@@ -202,7 +203,7 @@ public class CalendarOperations {
 
         ContentResolver cr = ctx.getContentResolver();
 
-        String currentTimeZone = java.util.Calendar.getInstance().getTimeZone().getDisplayName();
+        String currentTimeZone = TimeZone.getDefault().getID();
         String eventId = event.getEventId() != null ? event.getEventId() : null;
         ContentValues values = new ContentValues();
         values.put(Events.DTSTART, event.getStartDate());
@@ -232,6 +233,20 @@ public class CalendarOperations {
                                 + " = " + eventId;
                 int updCount = cr.update(Events.CONTENT_URI, values, selection,
                         null);
+            }
+
+            if (event.getReminder() != null) {
+                long minutes = event.getReminder().getMinutes();
+                ContentValues reminderValues = new ContentValues();
+                reminderValues.put(CalendarContract.Reminders.MINUTES, minutes);
+                String reminderSelection = CalendarContract.Reminders.EVENT_ID + " = " + eventId;
+                int updatedReminders = cr.update(CalendarContract.Reminders.CONTENT_URI, reminderValues,
+                        reminderSelection, null);
+                if (updatedReminders == 0) {
+                    reminderValues.put(CalendarContract.Reminders.EVENT_ID, eventId);
+                    reminderValues.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALARM);
+                    cr.insert(CalendarContract.Reminders.CONTENT_URI, reminderValues);
+                }
             }
         } catch (Exception e) {
             Log.e("XXX", e.getMessage());

@@ -1,8 +1,8 @@
-part of manage_calendar_events;
+part of '../manage_calendar_events.dart';
 
 class CalendarPlugin {
   static const MethodChannel _channel =
-      const MethodChannel('manage_calendar_events');
+      MethodChannel('manage_calendar_events');
 
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
@@ -122,21 +122,19 @@ class CalendarPlugin {
         'createEvent',
         <String, Object?>{
           'calendarId': calendarId,
-          'eventId': event.eventId != null ? event.eventId : null,
+          'eventId': event.eventId,
           'title': event.title,
           'description': event.description,
           'startDate': event.startDate!.millisecondsSinceEpoch,
           'endDate': event.endDate!.millisecondsSinceEpoch,
           'location': event.location,
-          'isAllDay': event.isAllDay != null ? event.isAllDay : false,
-          'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
+          'isAllDay': event.isAllDay ?? false,
+          'hasAlarm': event.hasAlarm ?? false,
           'url': event.url,
-          'reminder': event.reminder != null ? event.reminder!.minutes : null,
-          'attendees': event.attendees != null
-              ? event.attendees!.attendees
+          'reminder': event.reminder?.minutes,
+          'attendees': event.attendees?.attendees
                   .map((attendee) => attendee.toJson())
-                  .toList()
-              : null,
+              .toList(),
         },
       );
     } catch (e) {
@@ -157,21 +155,19 @@ class CalendarPlugin {
         'updateEvent',
         <String, Object?>{
           'calendarId': calendarId,
-          'eventId': event.eventId != null ? event.eventId : null,
+          'eventId': event.eventId,
           'title': event.title,
           'description': event.description,
           'startDate': event.startDate!.millisecondsSinceEpoch,
           'endDate': event.endDate!.millisecondsSinceEpoch,
           'location': event.location,
-          'isAllDay': event.isAllDay != null ? event.isAllDay : false,
-          'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
+          'isAllDay': event.isAllDay ?? false,
+          'hasAlarm': event.hasAlarm ?? false,
           'url': event.url,
-          'reminder': event.reminder != null ? event.reminder!.minutes : null,
-          'attendees': event.attendees != null
-              ? event.attendees!.attendees
+          'reminder': event.reminder?.minutes,
+          'attendees': event.attendees?.attendees
                   .map((attendee) => attendee.toJson())
-                  .toList()
-              : null,
+              .toList(),
         },
       );
     } catch (e) {

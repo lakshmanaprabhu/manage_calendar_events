@@ -1,4 +1,4 @@
-part of manage_calendar_events;
+part of '../../manage_calendar_events.dart';
 
 class Calendar {
   String? id;
@@ -16,20 +16,20 @@ class Calendar {
   });
 
   Calendar.fromJson(Map<String, dynamic> data) {
-    this.id = data["id"];
-    this.name = data["name"];
-    this.accountName = data["accountName"];
-    this.ownerName = data["ownerName"];
-    this.isReadOnly = data["isReadOnly"];
+    id = data["id"];
+    name = data["name"];
+    accountName = data["accountName"];
+    ownerName = data["ownerName"];
+    isReadOnly = data["isReadOnly"];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data["id"] = this.id;
-    data["name"] = this.name;
-    data["accountName"] = this.accountName;
-    data["ownerName"] = this.ownerName;
-    data["isReadOnly"] = this.isReadOnly;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data["id"] = id;
+    data["name"] = name;
+    data["accountName"] = accountName;
+    data["ownerName"] = ownerName;
+    data["isReadOnly"] = isReadOnly;
     return data;
   }
 }

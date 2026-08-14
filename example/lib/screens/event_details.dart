@@ -8,7 +8,8 @@ class EventDetails extends StatefulWidget {
   final CalendarPlugin calendarPlugin;
   final bool isReadOnly;
 
-  EventDetails({
+  const EventDetails({
+    super.key, 
     required this.activeEvent,
     required this.calendarPlugin,
     this.isReadOnly = false,
@@ -23,7 +24,7 @@ class _EventDetailsState extends State<EventDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.widget.activeEvent.title!),
+        title: Text(widget.activeEvent.title!),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -36,24 +37,24 @@ class _EventDetailsState extends State<EventDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Description: ${this.widget.activeEvent.description}',
+                    'Description: ${widget.activeEvent.description}',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   SizedBox(height: 20),
-                  Text('Start Date: ${this.widget.activeEvent.startDate}'),
+                  Text('Start Date: ${widget.activeEvent.startDate}'),
                   SizedBox(height: 20),
-                  Text('End Date: ${this.widget.activeEvent.endDate}'),
+                  Text('End Date: ${widget.activeEvent.endDate}'),
                   SizedBox(height: 20),
-                  Text('Location: ${this.widget.activeEvent.location}'),
+                  Text('Location: ${widget.activeEvent.location}'),
                   SizedBox(height: 20),
-                  Text('URL: ${this.widget.activeEvent.url}'),
+                  Text('URL: ${widget.activeEvent.url}'),
                   SizedBox(height: 20),
-                  Text('All day event: ${this.widget.activeEvent.isAllDay}'),
+                  Text('All day event: ${widget.activeEvent.isAllDay}'),
                   SizedBox(height: 20),
-                  Text('Has Alarm: ${this.widget.activeEvent.hasAlarm}'),
+                  Text('Has Alarm: ${widget.activeEvent.hasAlarm}'),
                   SizedBox(height: 20),
                   Text(
-                    'Reminder: ${this.widget.activeEvent.reminder?.minutes}',
+                    'Reminder: ${widget.activeEvent.reminder?.minutes}',
                   ),
                 ],
               ),

@@ -6,14 +6,18 @@ import 'screens/calendar_list.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(home: new CalendarPluginCheck());
+    return MaterialApp(home: CalendarPluginCheck());
   }
 }
 
 class CalendarPluginCheck extends StatelessWidget {
   final CalendarPlugin _myPlugin = CalendarPlugin();
+
+  CalendarPluginCheck({super.key});
 
   @override
   Widget build(BuildContext context) {

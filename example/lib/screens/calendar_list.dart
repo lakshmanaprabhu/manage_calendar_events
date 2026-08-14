@@ -6,9 +6,11 @@ import 'event_list.dart';
 class CalendarList extends StatelessWidget {
   final CalendarPlugin _myPlugin = CalendarPlugin();
 
+  CalendarList({super.key});
+
   @override
   Widget build(BuildContext context) {
-    Widget _futureBuilder = FutureBuilder<List<Calendar>?>(
+    Widget futureBuilder = FutureBuilder<List<Calendar>?>(
       future: _fetchCalendars(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -60,7 +62,7 @@ class CalendarList extends StatelessWidget {
                 ),
               ),
             ),
-            _futureBuilder,
+            futureBuilder,
           ],
         ),
       ),

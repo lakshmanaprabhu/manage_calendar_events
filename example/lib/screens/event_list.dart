@@ -7,7 +7,8 @@ class EventList extends StatefulWidget {
   final String calendarId;
   final bool isReadOnly;
 
-  EventList({
+  const EventList({
+    super.key, 
     required this.calendarId,
     this.isReadOnly = false,
   });
@@ -112,7 +113,7 @@ class _EventListState extends State<EventList> {
   }
 
   Future<List<CalendarEvent>?> _fetchEvents() async {
-    return _myPlugin.getEvents(calendarId: this.widget.calendarId);
+    return _myPlugin.getEvents(calendarId: widget.calendarId);
     // return _fetchEventsByDateRange();
     // return _myPlugin.getEventsByMonth(
     //     calendarId: this.widget.calendarId,
@@ -128,7 +129,7 @@ class _EventListState extends State<EventList> {
         DateTime.now().toUtc().add(Duration(hours: 23, minutes: 59));
     DateTime startDate = endDate.subtract(Duration(days: 3));
     return _myPlugin.getEventsByDateRange(
-      calendarId: this.widget.calendarId,
+      calendarId: widget.calendarId,
       startDate: startDate,
       endDate: endDate,
     );
@@ -137,7 +138,7 @@ class _EventListState extends State<EventList> {
   void _addEvent() async {
     DateTime startDate = DateTime.now();
     DateTime endDate = startDate.add(Duration(hours: 3));
-    CalendarEvent _newEvent = CalendarEvent(
+    CalendarEvent newEvent = CalendarEvent(
       title: 'Event from plugin',
       description: 'test plugin description',
       startDate: startDate,
@@ -152,7 +153,7 @@ class _EventListState extends State<EventList> {
       ),
     );
     _myPlugin
-        .createEvent(calendarId: widget.calendarId, event: _newEvent)
+        .createEvent(calendarId: widget.calendarId, event: newEvent)
         .then((evenId) {
       setState(() {
         debugPrint('Event Id is: $evenId');

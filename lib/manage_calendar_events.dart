@@ -1,4 +1,4 @@
-library manage_calendar_events;
+library;
 
 import 'dart:async';
 import 'dart:convert';

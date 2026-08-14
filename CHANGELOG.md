@@ -1,3 +1,10 @@
+## 2.1.2
+* Fix #24: `addReminder` never resolved its result on Android or iOS, leaving the Dart `Future` hanging
+* Fix #42: `onDetachedFromEngine` NPE when the plugin is detached without ever attaching to an Activity
+* Fix #23: Android event timezone used a display name instead of a valid IANA timezone ID
+* Fix #36: `createEvent`/`updateEvent` crashed on iOS when the calendar/event lookup failed instead of failing gracefully
+* Fix #30: `createEvent`/`updateEvent` ignored the caller's `reminder`/`hasAlarm` on both Android and iOS (Android never wrote a Reminders row at all; iOS used a hardcoded fixed offset)
+* Fix #37: migrate iOS calendar permission requests/checks to the iOS 17+ full-access API, with a fallback for older versions; document `NSCalendarsFullAccessUsageDescription` in the README
 ## 2.1.1
 * Fix iOS crashes reported in #3, #27, #28, #33, #34, #39:
   * `createEvent`/`updateEvent` no longer crash when `title`/`description` are nil (#3)

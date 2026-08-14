@@ -26,3 +26,10 @@ iOS support is used a swift code and it requires a following permissions to add 
 <key>NSCalendarsUsageDescription</key>
 <string>INSERT_REASON_HERE</string>
 ```
+
+On iOS 17+, calendar access is split into full access and write-only access. This plugin requests full access (it also reads calendars/events), so also add:
+
+```xml
+<key>NSCalendarsFullAccessUsageDescription</key>
+<string>INSERT_REASON_HERE</string>
+```

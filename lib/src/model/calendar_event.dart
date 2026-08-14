@@ -1,4 +1,4 @@
-part of manage_calendar_events;
+part of '../../manage_calendar_events.dart';
 
 class CalendarEvent {
   String? eventId;
@@ -30,26 +30,26 @@ class CalendarEvent {
   });
 
   CalendarEvent.fromJson(Map<String, dynamic> data) {
-    this.eventId = data['eventId'];
-    this.title = data['title'];
-    this.description = data['description'];
+    eventId = data['eventId'];
+    title = data['title'];
+    description = data['description'];
     var date = data['startDate'];
     if (date != null) {
-      this.startDate = DateTime.fromMillisecondsSinceEpoch(date);
+      startDate = DateTime.fromMillisecondsSinceEpoch(date);
     }
     date = data['endDate'];
     if (date != null) {
-      this.endDate = DateTime.fromMillisecondsSinceEpoch(date);
+      endDate = DateTime.fromMillisecondsSinceEpoch(date);
     }
-    this.location = data['location'];
-    this.isAllDay = data['isAllDay'];
-    this.hasAlarm = data['hasAlarm'];
-    this.url = data['url'];
+    location = data['location'];
+    isAllDay = data['isAllDay'];
+    hasAlarm = data['hasAlarm'];
+    url = data['url'];
     if (data['reminder'] != null) {
-      this.reminder = Reminder.fromJson(data['reminder']);
+      reminder = Reminder.fromJson(data['reminder']);
     }
     if (data['attendees'] != null && (data['attendees'] as List).isNotEmpty) {
-      this.attendees = Attendees.fromJson(data['attendees']);
+      attendees = Attendees.fromJson(data['attendees']);
     }
   }
 
@@ -63,7 +63,7 @@ class Reminder {
 
   Reminder({required this.minutes});
 
-  Reminder.fromJson(Map<String, dynamic> data) : this.minutes = data['minutes'];
+  Reminder.fromJson(Map<String, dynamic> data) : minutes = data['minutes'];
 }
 
 class Attendees {
@@ -75,10 +75,10 @@ class Attendees {
 
   static fromJson(List<dynamic> data) {
     List<Attendee> attendees = List.empty(growable: true);
-    data.forEach((element) {
+    for (var element in data) {
       Attendee attendee = Attendee.fromJson(element);
       attendees.add(attendee);
-    });
+    }
     return Attendees(attendees: attendees);
   }
 }
@@ -95,9 +95,9 @@ class Attendee {
   });
 
   Attendee.fromJson(Map<String, dynamic> data)
-      : this.name = data['name'],
-        this.emailAddress = data['emailAddress'],
-        this.isOrganiser = data['isOrganiser'] ?? false;
+      : name = data['name'],
+        emailAddress = data['emailAddress'],
+        isOrganiser = data['isOrganiser'] ?? false;
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
