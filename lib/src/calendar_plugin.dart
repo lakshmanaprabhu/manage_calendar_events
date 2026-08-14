@@ -45,6 +45,52 @@ class CalendarPlugin {
     return calendars;
   }
 
+  /// Creates a new local (non-synced) calendar on the device and returns
+  /// its calendar id, or null if it could not be created.
+  ///
+  /// The calendar isn't backed by an account like Google or iCloud, so it
+  /// won't sync anywhere else - it only lives on this device. Only
+  /// calendars created this way can be removed with [deleteCalendar].
+  Future<String?> createCalendar({
+    required String calendarName,
+    Color? color,
+  }) async {
+    String? calendarId;
+    try {
+      calendarId = await _channel.invokeMethod(
+        'createCalendar',
+        <String, Object?>{
+          'calendarName': calendarName,
+          'color': color?.toARGB32(),
+        },
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return calendarId;
+  }
+
+  /// Deletes a local (non-synced) calendar previously created with
+  /// [createCalendar].
+  ///
+  /// Returns false (and leaves the calendar untouched) for any calendar
+  /// that isn't local - this can never delete a user's real synced
+  /// Google/iCloud calendar.
+  Future<bool?> deleteCalendar({required String calendarId}) async {
+    bool? isDeleted = false;
+    try {
+      isDeleted = await _channel.invokeMethod(
+        'deleteCalendar',
+        <String, Object?>{
+          'calendarId': calendarId,
+        },
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return isDeleted;
+  }
+
   /// Returns all the available events in the selected calendar
   Future<List<CalendarEvent>?> getEvents({required String calendarId}) async {
     List<CalendarEvent>? events = [];

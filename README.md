@@ -15,7 +15,8 @@ A Flutter plugin for reading, creating, updating, and deleting device calendar e
 
 ## Features
 
-* List all calendars available on the device, including whether each one is read-only
+* List all calendars available on the device, including whether each one is read-only or local
+* Create and delete local (non-synced) calendars
 * Read events from a calendar — all events, a date range, or a whole week/month
 * Create and update events: title, description, location, URL, all-day flag, and a reminder
 * Delete events
@@ -75,6 +76,19 @@ if (!granted) {
 ```dart
 final calendars = await _calendarPlugin.getCalendars();
 final calendar = calendars!.first;
+```
+
+### Create or delete a local calendar
+
+```dart
+final calendarId = await _calendarPlugin.createCalendar(
+  calendarName: 'My App Calendar',
+  color: Colors.blue,
+);
+
+// Only ever succeeds for a calendar created this way - it can't delete a
+// user's real synced Google/iCloud calendar.
+await _calendarPlugin.deleteCalendar(calendarId: calendarId!);
 ```
 
 ### Read events

@@ -11,12 +11,19 @@ public final class Calendar {
   private final String accountName;
   @SerializedName("ownerName")
   private final String ownerName;
+  @SerializedName("isReadOnly")
+  private final boolean isReadOnly;
+  @SerializedName("isLocal")
+  private final boolean isLocal;
 
-  public Calendar(String id, String name, String accountName, String ownerName) {
+  public Calendar(String id, String name, String accountName, String ownerName,
+      boolean isReadOnly, boolean isLocal) {
     this.id = id;
     this.name = name;
-    this.accountName = name;
-    this.ownerName = name;
+    this.accountName = accountName;
+    this.ownerName = ownerName;
+    this.isReadOnly = isReadOnly;
+    this.isLocal = isLocal;
   }
 
   public String getId() {
@@ -33,6 +40,14 @@ public final class Calendar {
 
   public String getOwnerName() {
     return ownerName;
+  }
+
+  public boolean isReadOnly() {
+    return isReadOnly;
+  }
+
+  public boolean isLocal() {
+    return isLocal;
   }
 
   @Override

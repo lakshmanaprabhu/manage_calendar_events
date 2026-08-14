@@ -1,3 +1,8 @@
+## 2.2.0
+* Add `createCalendar`/`deleteCalendar` (closes #38, #20): create local, non-synced calendars and delete them again. `deleteCalendar` only ever succeeds on a local calendar (e.g. one this plugin created) — it can never delete a user's real synced Google/iCloud calendar
+* Add `isLocal` to `Calendar`, alongside the existing `isReadOnly`
+* Fix two pre-existing bugs found while wiring up `isLocal` on Android: `getCalendars()` queried `CALENDAR_ACCESS_LEVEL` but never actually read it, so `isReadOnly` was always null despite being in the model since 2.0.3; and the `Calendar` constructor assigned `accountName`/`ownerName` both from the `name` parameter instead of their own parameters
+* iOS: `getCalendars()` now populates `accountName`/`ownerName` from the calendar's source title instead of always returning an empty string
 ## 2.1.2
 * Replace the LICENSE file with an actual MIT license (it previously just said "All rights reserved", which pub.dev flagged as `license:unknown`)
 * Rewrite README.md with badges, platform support table, full setup instructions (including the iOS 17 `NSCalendarsFullAccessUsageDescription` key), and copy-pasteable usage examples for every API method

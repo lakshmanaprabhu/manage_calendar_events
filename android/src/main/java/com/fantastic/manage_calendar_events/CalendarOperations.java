@@ -4,9 +4,11 @@ import android.Manifest.permission;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
@@ -83,6 +85,7 @@ public class CalendarOperations {
                 {
                         Calendars._ID,
                         Calendars.ACCOUNT_NAME,
+                        Calendars.ACCOUNT_TYPE,
                         Calendars.CALENDAR_DISPLAY_NAME,
                         Calendars.OWNER_ACCOUNT,
                         Calendars.CALENDAR_ACCESS_LEVEL
@@ -102,9 +105,16 @@ public class CalendarOperations {
                         .getString(cur.getColumnIndex(Calendars.CALENDAR_DISPLAY_NAME));
                 String accountName = cur
                         .getString(cur.getColumnIndex(Calendars.ACCOUNT_NAME));
+                String accountType = cur
+                        .getString(cur.getColumnIndex(Calendars.ACCOUNT_TYPE));
                 String ownerName = cur
                         .getString(cur.getColumnIndex(Calendars.OWNER_ACCOUNT));
-                Calendar calendar = new Calendar(calenderId, displayName, accountName, ownerName);
+                int accessLevel = cur
+                        .getInt(cur.getColumnIndex(Calendars.CALENDAR_ACCESS_LEVEL));
+                boolean isReadOnly = accessLevel < Calendars.CAL_ACCESS_CONTRIBUTOR;
+                boolean isLocal = CalendarContract.ACCOUNT_TYPE_LOCAL.equals(accountType);
+                Calendar calendar = new Calendar(calenderId, displayName, accountName, ownerName,
+                        isReadOnly, isLocal);
                 calendarList.add(calendar);
             }
         } catch (Exception e) {
@@ -113,6 +123,81 @@ public class CalendarOperations {
             cur.close();
         }
         return calendarList;
+    }
+
+    public String createCalendar(String calendarName, Integer color) {
+        if (!hasPermissions()) {
+            requestPermissions();
+        }
+        ContentResolver cr = ctx.getContentResolver();
+
+        ContentValues values = new ContentValues();
+        values.put(Calendars.ACCOUNT_NAME, calendarName);
+        values.put(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL);
+        values.put(Calendars.NAME, calendarName);
+        values.put(Calendars.CALENDAR_DISPLAY_NAME, calendarName);
+        values.put(Calendars.CALENDAR_COLOR, color != null ? color : Color.BLUE);
+        values.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER);
+        values.put(Calendars.OWNER_ACCOUNT, calendarName);
+        values.put(Calendars.VISIBLE, 1);
+        values.put(Calendars.SYNC_EVENTS, 1);
+
+        // A local (non-synced) calendar can only be created through a URI that
+        // identifies the calling app as a sync adapter for that local account.
+        Uri calendarUri = Calendars.CONTENT_URI.buildUpon()
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(Calendars.ACCOUNT_NAME, calendarName)
+                .appendQueryParameter(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
+                .build();
+
+        try {
+            Uri result = cr.insert(calendarUri, values);
+            if (result == null) {
+                return null;
+            }
+            return result.getLastPathSegment();
+        } catch (Exception e) {
+            Log.e("XXX", e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean deleteCalendar(String calendarId) {
+        if (!hasPermissions()) {
+            requestPermissions();
+        }
+        ContentResolver cr = ctx.getContentResolver();
+        Uri calendarUri = ContentUris.withAppendedId(Calendars.CONTENT_URI,
+                Long.parseLong(calendarId));
+
+        String[] projection = { Calendars.ACCOUNT_TYPE };
+        boolean isLocal = false;
+        Cursor cur = cr.query(calendarUri, projection, null, null, null);
+        try {
+            if (cur != null && cur.moveToFirst()) {
+                String accountType = cur.getString(cur.getColumnIndex(Calendars.ACCOUNT_TYPE));
+                isLocal = CalendarContract.ACCOUNT_TYPE_LOCAL.equals(accountType);
+            }
+        } finally {
+            if (cur != null) {
+                cur.close();
+            }
+        }
+
+        // Only ever allow deleting calendars this plugin itself could have
+        // created (i.e. local, non-synced ones) - never a user's real synced
+        // Google/iCloud calendar.
+        if (!isLocal) {
+            return false;
+        }
+
+        try {
+            int deleted = cr.delete(calendarUri, null, null);
+            return deleted > 0;
+        } catch (Exception e) {
+            Log.e("XXX", e.getMessage());
+            return false;
+        }
     }
 
     public ArrayList<CalendarEvent> getAllEvents(String calendarId) {

@@ -3,15 +3,33 @@ import 'package:manage_calendar_events/manage_calendar_events.dart';
 
 import 'event_list.dart';
 
-class CalendarList extends StatelessWidget {
-  final CalendarPlugin _myPlugin = CalendarPlugin();
+class CalendarList extends StatefulWidget {
+  const CalendarList({super.key});
 
-  CalendarList({super.key});
+  @override
+  State<CalendarList> createState() => _CalendarListState();
+}
+
+class _CalendarListState extends State<CalendarList> {
+  final CalendarPlugin _myPlugin = CalendarPlugin();
+  late Future<List<Calendar>?> _calendars;
+
+  @override
+  void initState() {
+    super.initState();
+    _calendars = _fetchCalendars();
+  }
+
+  void _refresh() {
+    setState(() {
+      _calendars = _fetchCalendars();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     Widget futureBuilder = FutureBuilder<List<Calendar>?>(
-      future: _fetchCalendars(),
+      future: _calendars,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container();
@@ -25,7 +43,13 @@ class CalendarList extends StatelessWidget {
               return ListTile(
                 title: Text(calendar.name!),
                 subtitle: calendar.isReadOnly != null && calendar.isReadOnly!
-                    ? Text('Read Only')
+                    ? const Text('Read Only')
+                    : null,
+                trailing: calendar.isLocal == true
+                    ? IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () => _deleteCalendar(calendar),
+                      )
                     : null,
                 onTap: () {
                   Navigator.push(
@@ -66,6 +90,11 @@ class CalendarList extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _createCalendar,
+        tooltip: 'Create a local calendar',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
@@ -77,5 +106,45 @@ class CalendarList extends StatelessWidget {
     });
 
     return _myPlugin.getCalendars();
+  }
+
+  Future<void> _createCalendar() async {
+    final controller = TextEditingController();
+    final name = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('New local calendar'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(hintText: 'Calendar name'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: const Text('Create'),
+          ),
+        ],
+      ),
+    );
+
+    if (name == null || name.trim().isEmpty) {
+      return;
+    }
+
+    await _myPlugin.createCalendar(
+      calendarName: name.trim(),
+      color: Colors.blue,
+    );
+    _refresh();
+  }
+
+  Future<void> _deleteCalendar(Calendar calendar) async {
+    await _myPlugin.deleteCalendar(calendarId: calendar.id!);
+    _refresh();
   }
 }

@@ -15,6 +15,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let accountName: String?
         let ownerName: String?
         let isReadOnly: Bool
+        let isLocal: Bool
     }
 
     struct CalendarEvent: Codable {
@@ -57,6 +58,15 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         } else if (call.method == "getCalendars") {
             let calendarArrayList = self.getCalendars()
             result(calendarArrayList)
+        } else if (call.method == "createCalendar") {
+            let arguments = call.arguments as! Dictionary<String, AnyObject>
+            let calendarName = arguments["calendarName"] as! String
+            let color = arguments["color"] as? Int
+            result(self.createCalendar(title: calendarName, color: color))
+        } else if (call.method == "deleteCalendar") {
+            let arguments = call.arguments as! Dictionary<String, AnyObject>
+            let calendarId = arguments["calendarId"] as! String
+            result(self.deleteCalendar(calendarId: calendarId))
         } else if (call.method == "getEvents") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
             let calendarId = arguments["calendarId"] as! String
@@ -189,7 +199,14 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         let ekCalendars = self.eventStore.calendars(for: .event)
         var calendars = [Calendar]()
         for ekCalendar in ekCalendars {
-            let calendar = Calendar(id: ekCalendar.calendarIdentifier, name: ekCalendar.title, accountName: "", ownerName: "", isReadOnly: !ekCalendar.allowsContentModifications)
+            let calendar = Calendar(
+                id: ekCalendar.calendarIdentifier,
+                name: ekCalendar.title,
+                accountName: ekCalendar.source.title,
+                ownerName: ekCalendar.source.title,
+                isReadOnly: !ekCalendar.allowsContentModifications,
+                isLocal: ekCalendar.source.sourceType == .local
+            )
             calendars.append(calendar)
         }
 
@@ -203,6 +220,54 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         }
 
         return jsonString
+    }
+
+    private func createCalendar(title: String, color: Int?) -> String? {
+        if(!hasPermissions()) {
+            requestPermissions()
+        }
+        guard let source = self.eventStore.sources.first(where: { $0.sourceType == .local }) else {
+            return nil
+        }
+
+        let newCalendar = EKCalendar(for: .event, eventStore: self.eventStore)
+        newCalendar.title = title
+        newCalendar.source = source
+        if let color = color {
+            newCalendar.cgColor = UIColor(
+                red: CGFloat((color >> 16) & 0xFF) / 255.0,
+                green: CGFloat((color >> 8) & 0xFF) / 255.0,
+                blue: CGFloat(color & 0xFF) / 255.0,
+                alpha: CGFloat((color >> 24) & 0xFF) / 255.0
+            ).cgColor
+        }
+
+        do {
+            try self.eventStore.saveCalendar(newCalendar, commit: true)
+            return newCalendar.calendarIdentifier
+        } catch {
+            return nil
+        }
+    }
+
+    private func deleteCalendar(calendarId: String) -> Bool {
+        if(!hasPermissions()) {
+            requestPermissions()
+        }
+        // Only ever allow deleting calendars this plugin itself could have
+        // created (i.e. local, non-synced ones) - never a user's real synced
+        // Google/iCloud calendar.
+        guard let calendar = self.eventStore.calendar(withIdentifier: calendarId),
+              calendar.source.sourceType == .local else {
+            return false
+        }
+
+        do {
+            try self.eventStore.removeCalendar(calendar, commit: true)
+            return true
+        } catch {
+            return false
+        }
     }
 
     private func getAllEvents(calendarId: String) -> String? {
